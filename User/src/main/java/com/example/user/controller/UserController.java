@@ -4,6 +4,7 @@ import com.example.user.dto.SimpleDto;
 import com.example.user.po.User;
 import com.example.user.service.AsyncService;
 import com.example.user.service.interfaces.UserService;
+import com.example.user.util.FileUtil;
 import com.example.user.util.SecurityCodeUtil;
 import com.example.user.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +147,26 @@ public class UserController {
                     return new SimpleDto(false,"该用户名已被注册",null);
                 }
             }
+        }
+    }
+
+    //上传头像，存储在 /upload/ZhiHu/用户id/portrait.文件后缀
+    @PostMapping("/Portrait/{id}")
+    public SimpleDto uploadPortrait(@PathVariable("id")Long id, MultipartHttpServletRequest request){
+        try {
+            MultipartFile portrait = request.getFile("portrait");
+            if(portrait != null){
+                FileUtil.doFile("/User/"+id);
+                String fileName = FileUtil.convertFileName(portrait,id);
+                File file = new File("User/"+id+"/"+fileName);
+                portrait.transferTo(file);
+                userService.setPortraitFileNameById(id,fileName);
+                return new SimpleDto(true,fileName,null);
+            }else{
+                return new SimpleDto(false,"文件为空",null);
+            }
+        }catch (Exception e){
+            return new SimpleDto(false,"上传失败",null);
         }
     }
 
