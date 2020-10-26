@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 @MapperScan(basePackages = "com.example.user.dao",annotationClass = Repository.class)
 @EnableFeignClients
+@EnableDiscoveryClient
 @SpringBootApplication
 public class UserApplication {
 

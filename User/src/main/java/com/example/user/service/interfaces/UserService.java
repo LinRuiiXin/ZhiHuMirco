@@ -1,6 +1,7 @@
 package com.example.user.service.interfaces;
 
-import com.example.user.po.User;
+
+import com.example.basic.po.User;
 
 public interface UserService {
     public boolean mailHasRegistered(String mail);

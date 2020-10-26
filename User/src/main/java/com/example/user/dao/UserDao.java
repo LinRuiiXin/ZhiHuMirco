@@ -1,6 +1,6 @@
 package com.example.user.dao;
 
-import com.example.user.po.User;
+import com.example.basic.po.User;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 

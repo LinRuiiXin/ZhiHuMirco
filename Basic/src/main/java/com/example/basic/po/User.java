@@ -1,9 +1,16 @@
-package com.example.user.po;
+package com.example.basic.po;
 
 import org.apache.ibatis.type.Alias;
 
 import java.io.Serializable;
 import java.util.Date;
+
+/**
+ * TODO
+ *
+ * @author LinRuiXin
+ * @date 2020/10/26 8:13 下午
+ */
 
 @Alias("user")
 public class User implements Serializable {

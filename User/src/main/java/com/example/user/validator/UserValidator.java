@@ -1,6 +1,6 @@
 package com.example.user.validator;
 
-import com.example.user.po.User;
+import com.example.basic.po.User;
 import com.example.user.util.RegexUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

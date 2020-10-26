@@ -1,7 +1,7 @@
 package com.example.user.controller;
 
-import com.example.user.dto.SimpleDto;
-import com.example.user.po.User;
+import com.example.basic.dto.SimpleDto;
+import com.example.basic.po.User;
 import com.example.user.service.AsyncService;
 import com.example.user.service.interfaces.UserService;
 import com.example.user.util.FileUtil;

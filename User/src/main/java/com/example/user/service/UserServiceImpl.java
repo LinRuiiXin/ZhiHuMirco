@@ -1,7 +1,7 @@
 package com.example.user.service;
 
+import com.example.basic.po.User;
 import com.example.user.dao.UserDao;
-import com.example.user.po.User;
 import com.example.user.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
