@@ -1,5 +1,7 @@
 # ZhiHuMicro(开发中)
 
+一个模仿知乎的后端系统，并提供了Android端---[ZhiHu](https://github.com/LinRuiiXin/ZhiHu) ,喜欢的话就点个Star吧！
+
 基于微服务架构的ZhiHu服务端，将原本的单个应用拆分为多个模块，系统的扩展性和维护性得到有效改善
 
 ## 模块结构
