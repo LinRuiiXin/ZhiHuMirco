@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.comment.dao.CommentSupportDao">
+    <select id="hadSupportAnswerCommentLvOne" resultType="java.lang.Long">
+        select id from answer_level_one_support
+        where commentId = #{commentId} and userId = #{userId}
+        limit 1
+    </select>
+    <select id="hadSupportAnswerCommentLvTwo" resultType="java.lang.Long">
+        select id from answer_level_two_support
+        where replyId = #{commentId} and userId = #{userId}
+        limit 1
+    </select>
+    <delete id="deleteAllAnswerCommentLvTwoSupport">
+        delete from answer_level_two_support where replyId = #{commentLvTwoId}
+    </delete>
+    <delete id="deleteAllAnswerCommentLvOneSupport">
+        delete from answer_level_one_support where commentId = #{commentLvOneId}
+    </delete>
+</mapper>

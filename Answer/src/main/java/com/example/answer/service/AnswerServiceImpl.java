@@ -5,21 +5,23 @@ import com.example.answer.service.interfaces.AnswerService;
 import com.example.answer.service.rpc.UserService;
 import com.example.basic.dto.SimpleDto;
 import com.example.basic.po.Answer;
+import com.example.basic.po.User;
 import com.example.basic.vo.AnswerVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.Map;
+import java.util.concurrent.*;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
@@ -28,30 +30,38 @@ public class AnswerServiceImpl implements AnswerService {
     private String resourcesLocation;
     private final UserService userService;
 
+    /**
+     *    key-questionId value-lock
+     *    根据questionId决定哪个问题由哪个锁保护
+     */
+    private final Map<Long,Object> locks;
+
+    private final RedisTemplate redisTemplate;
     private final AnswerDao answerDao;
     private final ExecutorService executorService;
 
     @Autowired
-    public AnswerServiceImpl(AnswerDao answerDao, ExecutorService executorService, UserService userService){
+    public AnswerServiceImpl(AnswerDao answerDao, ExecutorService executorService, UserService userService,RedisTemplate redisTemplate){
+        locks = new ConcurrentHashMap<>();
         this.answerDao = answerDao;
         this.executorService = executorService;
         this.userService = userService;
+        this.redisTemplate = redisTemplate;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
     public SimpleDto insertAnswer(MultipartFile file, Answer answer) {
-        /*try {
+        try {
             answerDao.insertAnswer(answer);
             File newFile = new File("/Answer/" + answer.getId() + ".txt");
             file.transferTo(newFile);
-            questionService.updateQuestionOrder(answer.getQuestionId());
+            updateAnswerOrder(answer.getQuestionId());
             return new SimpleDto(true,null,null);
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new SimpleDto(false,"IO异常",null);
-        }*/
-        return null;
+        }
     }
 
     @Override
@@ -118,7 +128,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     private AnswerVo wrapAnswer(Long userId,Answer answer) throws ExecutionException, InterruptedException {
-        /*AnswerVo answerVo = new AnswerVo();
+        AnswerVo answerVo = new AnswerVo();
         if(userId != -1){
             answerVo.setAttention(userHasAttention(userId,answer.getUserId()));
             answerVo.setSupport(userHasSupport(userId,answer.getId()));
@@ -126,8 +136,7 @@ public class AnswerServiceImpl implements AnswerService {
         User user = userService.getUserById(answer.getUserId());
         answerVo.setUser(user);
         answerVo.setAnswer(answer);
-        return answerVo;*/
-        return null;
+        return answerVo;
     }
 
     private Future<String> getAnswerContent(Long id) {
@@ -161,7 +170,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     private List<Long> getCandidateId(Long questionId,Long id,Integer len){
-       /* List<Long> answerOrder = questionService.getAnswerOrder(questionId);
+        List<Long> answerOrder = getAnswerOrder(questionId);
         List<Long> ids = new ArrayList<>();
         int index = -1;
         for(int i = 0;i<answerOrder.size();i++){
@@ -179,11 +188,11 @@ public class AnswerServiceImpl implements AnswerService {
                 ids.add(answerOrder.get(indexNow));
             }
         }
-        return ids;*/
-        return  null;
+        return ids;
     }
+
     private Long getPreviousId(Long questionId,Long id){
-       /* List<Long> answerOrder = questionService.getAnswerOrder(questionId);
+        List<Long> answerOrder = getAnswerOrder(questionId);
         int index = -1;
         for(int i = 0;i<answerOrder.size();i++){
             Long idInOrder = answerOrder.get(i);
@@ -199,7 +208,6 @@ public class AnswerServiceImpl implements AnswerService {
             }
             return null;
         }
-        return null;*/
         return null;
     }
     private List<AnswerVo> getAnswerBatch(Long userId,List<Long> ids) throws ExecutionException, InterruptedException {
@@ -230,5 +238,57 @@ public class AnswerServiceImpl implements AnswerService {
         });
         List<Future<String>> futures = executorService.invokeAll(callableList);
         return futures;
+    }
+
+    /**
+     *  共享变量 -> locks
+     *  应该将这个业务分离到AnswerService中
+     */
+    @Override
+    public List<Long> getAnswerOrder(Long questionId) {
+        Object lock = locks.get(questionId);
+        if(lock == null){
+            Object o = new Object();
+            lock = locks.putIfAbsent(questionId,o);
+            if(lock == null)
+                lock = o;
+        }
+        String key = "AnswerOrder:"+questionId;
+        List<Long> answerOrder = null;
+        if(!redisTemplate.hasKey(key)){
+            synchronized (lock) {
+                if(!redisTemplate.hasKey(key)){
+                    answerOrder = answerDao.getAnswerOrder(questionId);
+                    redisTemplate.opsForValue().set(key, answerOrder);
+                }else
+                    answerOrder = (List<Long>) redisTemplate.opsForValue().get(key);
+            }
+        }else{
+            answerOrder = (List<Long>) redisTemplate.opsForValue().get(key);
+        }
+        return answerOrder;
+    }
+
+    @Override
+    public void updateAnswerOrder(Long questionId) {
+        Object lock = locks.get(questionId);
+        if(lock == null){
+            Object o = new Object();
+            lock = locks.putIfAbsent(questionId, o);
+            if(lock == null)
+                lock = o;
+        }
+        String key = "AnswerOrder:"+questionId;
+        List<Long> answerOder = answerDao.getAnswerOrder(questionId);
+        if(!redisTemplate.hasKey(key)){
+            synchronized (lock) {
+                if(!redisTemplate.hasKey(key))
+                    redisTemplate.opsForValue().set(key, answerOder);
+                else
+                    redisTemplate.boundValueOps(key).set(answerOder);
+            }
+        }else{
+            redisTemplate.boundValueOps(key).set(answerOder);
+        }
     }
 }

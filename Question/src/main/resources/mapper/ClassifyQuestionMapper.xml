@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.question.dao.ClassifyQuestionDao">
+    <insert id="insertClassifyQuestion">
+        insert into classify_question(questionId,typeId) values (#{questionId},#{typeId})
+    </insert>
+    <select id="getQuestionType" resultType="java.lang.Long">
+        select typeId from classify_question where questionId = #{questionId}
+    </select>
+    <select id="getRandomQuestionId" resultType="java.lang.Long">
+        select questionId from classify_question where typeId = #{typeId} order by rand() limit #{sum}
+    </select>
+</mapper>

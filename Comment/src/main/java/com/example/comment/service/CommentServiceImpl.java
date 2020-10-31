@@ -11,6 +11,7 @@ import com.example.comment.service.rpc.AnswerService;
 import com.example.comment.service.rpc.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,11 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * TODO
- *
+ * 评论业务层
  * @author LinRuiXin
  * @date 2020/10/26 10:43 下午
  */
+@Service
 public class CommentServiceImpl implements CommentService {
 
     private CommentDao commentDao;
@@ -81,8 +83,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void addAnswerCommentLevelOne(Long answerId, Long userId, String content) {
-        /*commentDao.addAnswerCommentLevelOne(answerId,userId,content);
-        answerService.updateAnswerCommentSum(answerId);*/
+        commentDao.addAnswerCommentLevelOne(answerId,userId,content);
+        answerService.updateAnswerCommentSum(answerId);
     }
 
     /*
@@ -119,13 +121,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteAnswerCommentLevelTwo(Long commentLevelTwoId) {
-        /*while(!tryLockCommentLevelTwo(commentLevelTwoId));
+        while(!tryLockCommentLevelTwo(commentLevelTwoId));
         try{
             commentDao.deleteAnswerCommentLevelTwo(commentLevelTwoId);
         }finally {
             unLockCommentLevelTwo(commentLevelTwoId);
         }
-        commentSupportDao.deleteAllAnswerCommentLvTwoSupport(commentLevelTwoId);*/
+        commentSupportDao.deleteAllAnswerCommentLvTwoSupport(commentLevelTwoId);
     }
 
 
@@ -157,7 +159,7 @@ public class CommentServiceImpl implements CommentService {
      * 删除所有一级评论的点赞，不加锁，因为此时一级评论已被删除。不能被点赞。
      * */
     private void deleteAllAnswerCommentLvOneSupport(Long commentLevelOneId) {
-//        commentSupportDao.deleteAllAnswerCommentLvOneSupport(commentLevelOneId);
+        commentSupportDao.deleteAllAnswerCommentLvOneSupport(commentLevelOneId);
     }
 
     /*
@@ -188,15 +190,13 @@ public class CommentServiceImpl implements CommentService {
 
     //用户是否为二级评论点赞
     private boolean userHadSupportCommentLevelTwo(Long commentId,Long userId) {
-//        return commentSupportDao.hadSupportAnswerCommentLvTwo(commentId,userId) != null;
-        return false;
+        return commentSupportDao.hadSupportAnswerCommentLvTwo(commentId,userId) != null;
     }
 
     /*
      * 获取用户是否为一级评论点赞
      * */
     private boolean userHadSupportCommentLevelOne(Long commentId, Long userId) {
-//        return commentSupportDao.hadSupportAnswerCommentLvOne(commentId, userId) != null;
-        return false;
+        return commentSupportDao.hadSupportAnswerCommentLvOne(commentId, userId) != null;
     }
 }

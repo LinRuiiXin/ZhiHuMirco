@@ -7,6 +7,9 @@ import com.example.user.service.interfaces.UserService;
 import com.example.user.util.FileUtil;
 import com.example.user.util.SecurityCodeUtil;
 import com.example.user.validator.UserValidator;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.Errors;
@@ -29,6 +32,7 @@ import java.util.Map;
  * @date 2020/10/25 11:34 上午
  */
 
+@Api("用户操作API")
 @RestController
 @RequestMapping("/User")
 public class UserController {
@@ -44,9 +48,9 @@ public class UserController {
         this.asyncService = asyncService;
     }
 
-    //发送邮件任务
+    @ApiOperation("通过验证码登陆-发送邮件任务(发送随机6位验证码)")
     @GetMapping("/Login/SecurityCode/{mail}")
-    public SimpleDto sendLoginMailSecurityCode(@PathVariable("mail")String mail){
+    public SimpleDto sendLoginMailSecurityCode(@ApiParam("用户的邮箱地址")@PathVariable String mail){
         //先判断是否存在用户
         if(userService.mailHasRegistered(mail)){
             //生成6位随机验证码
@@ -59,9 +63,9 @@ public class UserController {
         }
     }
 
-    //根据邮箱地址判断当前用户是否已被注册，如果还未被注册，发送验证码，否则返回错误信息
+    @ApiOperation("/根据邮箱地址判断当前用户是否已被注册，如果还未被注册，发送验证码，否则返回错误信息")
     @GetMapping("/Register/SecurityCode/{mail}")
-    public SimpleDto sendRegisterMailSecurityCode(@PathVariable("mail") String mail){
+    public SimpleDto sendRegisterMailSecurityCode(@ApiParam("用户邮箱地址")@PathVariable String mail){
         if(userService.mailHasRegistered(mail)){
             return new SimpleDto(false,"该账号已被注册",null);
         }else{
@@ -71,8 +75,9 @@ public class UserController {
     }
 
     //检查验证码
+    @ApiOperation("注册-检查验证码")
     @GetMapping("/Register/SecurityCode/{mail}/{code}")
-    public SimpleDto validateCode(@PathVariable("mail")String mail,@PathVariable("code") String code){
+    public SimpleDto validateCode(@ApiParam("邮箱地址")@PathVariable String mail,@ApiParam("验证码")@PathVariable String code){
         Object o = redisTemplate.opsForValue().get("RegisterCode:"+mail);
         if(o == null){
             return new SimpleDto(false,"验证码过期或已失效",null);
@@ -88,9 +93,9 @@ public class UserController {
 
 
 
-    //免密码登录
-    @GetMapping("/NoPassword/{mail}/{code}")
-    public SimpleDto loginNoPassword(@PathVariable("mail") String mail,@PathVariable("code")String code){
+    @ApiOperation("免密码登录")
+    @GetMapping("/Login/NoPassword/{mail}/{code}")
+    public SimpleDto loginNoPassword(@ApiParam("邮箱地址")@PathVariable String mail,@ApiParam("验证码")@PathVariable String code){
         Object o = redisTemplate.opsForValue().get("LoginCode:" + mail);
         if(o != null){
             String codeInRedis = (String) o;
@@ -108,9 +113,9 @@ public class UserController {
             return new SimpleDto(false,"验证码过期或已失效",null);
         }
     }
-
-    @GetMapping("/{mail}/{password}")
-    public SimpleDto loginWithPassword(@PathVariable String mail,@PathVariable String password){
+    @ApiOperation("通过邮箱地址与密码登录")
+    @GetMapping("/Login/{mail}/{password}")
+    public SimpleDto loginWithPassword(@ApiParam("邮箱地址")@PathVariable String mail,@ApiParam("密码")@PathVariable String password){
         User user = userService.queryUserByMailPassword(mail, password);
         if(user == null){
             return new SimpleDto(false,"账号或密码错误",null);
@@ -119,9 +124,9 @@ public class UserController {
         }
     }
 
-    //接收一个User，校验密码、邮箱地址、电话号码，插入数据
+    @ApiOperation("校验密码、邮箱地址、电话号码，插入数据")
     @PostMapping
-    public SimpleDto register(@Valid @RequestBody User user, Errors errors){
+    public SimpleDto register(@ApiParam("即将插入的用户数据")@Valid @RequestBody User user,@ApiParam("校验反馈") Errors errors){
         List<FieldError> fieldErrors = errors.getFieldErrors();
         Map<String,String> errorsMap = null;
         if(fieldErrors!=null && fieldErrors.size()!=0){
@@ -150,9 +155,9 @@ public class UserController {
         }
     }
 
-    //上传头像，存储在 /upload/ZhiHu/用户id/portrait.文件后缀
+    @ApiOperation("上传头像，存储在 /upload/ZhiHu/用户id/portrait.文件后缀")
     @PostMapping("/Portrait/{id}")
-    public SimpleDto uploadPortrait(@PathVariable("id")Long id, MultipartHttpServletRequest request){
+    public SimpleDto uploadPortrait(@ApiParam("用户Id")@PathVariable Long id, MultipartHttpServletRequest request){
         try {
             MultipartFile portrait = request.getFile("portrait");
             if(portrait != null){
@@ -170,6 +175,7 @@ public class UserController {
         }
     }
 
+    //为该控制器添加校验器
     @InitBinder
     public void initBinder(WebDataBinder binder){
         binder.setValidator(new UserValidator());

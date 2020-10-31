@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.question.dao.QuestionDao">
+    <insert id="insertQuestion" useGeneratedKeys="true" keyProperty="id">
+        insert into question(name,questionerId,hasDescribe,subscribeSum,browseSum,answerSum)
+        values(#{name},#{questionerId},#{hasDescribe},0,0,0)
+    </insert>
+    <select id="getRandomQuestion" resultType="question">
+        select * from question order by rand() limit 5
+    </select>
+    <update id="subscribeQuestion">
+        update question set subscribeSum = subscribeSum + 1 where id = #{questionId}
+    </update>
+    <update id="incrementAnswer">
+        update question set answerSum = answerSum + 1 where id = #{questionId}
+    </update>
+    <update id="disSubscribeQuestion">
+        update question set subscribeSum = subscribeSum - 1 where id = #{questionId}
+    </update>
+    <select id="getQuestionNameById" resultType="java.lang.String">
+        select name from question where id = #{questionId}
+    </select>
+</mapper>

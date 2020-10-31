@@ -3,17 +3,15 @@ package com.example.user;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.SpringCloudApplication;
-import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.client.RestTemplate;
 
+//Dao层扫描
 @MapperScan(basePackages = "com.example.user.dao",annotationClass = Repository.class)
+//开启Feign声明式服务调用
 @EnableFeignClients
+//开启服务发现
 @EnableDiscoveryClient
 @SpringBootApplication
 public class UserApplication {
@@ -22,9 +20,4 @@ public class UserApplication {
         SpringApplication.run(UserApplication.class, args);
     }
 
-//    @Bean
-//    @LoadBalanced
-//    public RestTemplate restTemplate(){
-//        return new RestTemplate();
-//    }
 }

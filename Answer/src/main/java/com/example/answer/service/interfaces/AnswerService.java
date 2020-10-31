@@ -19,4 +19,6 @@ public interface AnswerService {
     boolean userHasAttention(Long userId,Long answererId);
     boolean userHasSupport(Long userId,Long answerId);
     void updateAnswerCommentSum(Long answerId);
+    List<Long> getAnswerOrder(Long questionId);
+    void updateAnswerOrder(Long questionId);
 }

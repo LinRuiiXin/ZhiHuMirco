@@ -27,9 +27,6 @@ public class AnswerController {
     private final AnswerService answerService;
 
     @Autowired
-    UserService userService;
-
-    @Autowired
     public AnswerController(AnswerService answerService){
         this.answerService = answerService;
     }
