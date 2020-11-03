@@ -21,4 +21,6 @@ public interface AnswerService {
     void updateAnswerCommentSum(Long answerId);
     List<Long> getAnswerOrder(Long questionId);
     void updateAnswerOrder(Long questionId);
+    void supportAnswer(Long answerId,Long userId);
+    void unSupportAnswer(Long answerId,Long userId);
 }

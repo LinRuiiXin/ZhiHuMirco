@@ -35,7 +35,7 @@ public class SwaggerAutoConfiguration {
         this.swaggerConfig = swaggerConfig;
     }
 
-    //如果环境中没有此类对象，那么不装配
+    //如果环境中有此类对象，那么不装配
     @ConditionalOnMissingBean(Docket.class)
     @Bean
     public Docket docket(){

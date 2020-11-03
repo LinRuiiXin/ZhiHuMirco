@@ -8,4 +8,6 @@ public interface CommentSupportDao {
     Long hadSupportAnswerCommentLvTwo(Long commentId, Long userId);
     void deleteAllAnswerCommentLvTwoSupport(Long commentLvTwoId);
     void deleteAllAnswerCommentLvOneSupport(Long commentLvOneId);
+    void supportAnswerCommentLevelOne(Long commentLv1Id,Long userId);
+    void supportAnswerCommentLevelTwo(Long commentLv2Id,Long userId);
 }

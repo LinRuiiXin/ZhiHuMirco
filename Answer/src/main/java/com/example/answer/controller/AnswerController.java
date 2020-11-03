@@ -66,4 +66,14 @@ public class AnswerController {
         return new SimpleDto(true,null,nextTreeAnswer);
     }
 
+    @PostMapping("/Support")
+    public SimpleDto supportAnswer(@RequestParam Long answerId,@RequestParam Long userId){
+        answerService.supportAnswer(answerId,userId);
+        return new SimpleDto(true,null,null);
+    }
+    @PostMapping("/UnSupport")
+    public SimpleDto unSupportAnswer(@RequestParam Long answerId,@RequestParam Long userId){
+        answerService.unSupportAnswer(answerId,userId);
+        return new SimpleDto(true,null,null);
+    }
 }

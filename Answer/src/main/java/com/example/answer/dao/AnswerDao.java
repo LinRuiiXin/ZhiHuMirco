@@ -23,4 +23,6 @@ public interface AnswerDao {
     Integer userHasAttention(@Param("userId") Long userId, @Param("answererId") Long answererId);
     Integer userHasSupport(@Param("userId") Long userId,@Param("answerId") Long answerId);
     void updateAnswerCommentSum(Long answerId);
+    void incrementSupportSum(Long answerId);
+    void decrementSupportSum(Long answerId);
 }

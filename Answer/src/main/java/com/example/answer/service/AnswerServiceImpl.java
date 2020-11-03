@@ -1,6 +1,7 @@
 package com.example.answer.service;
 
 import com.example.answer.dao.AnswerDao;
+import com.example.answer.dao.AnswerSupportDao;
 import com.example.answer.service.interfaces.AnswerService;
 import com.example.answer.service.rpc.UserService;
 import com.example.basic.dto.SimpleDto;
@@ -38,15 +39,17 @@ public class AnswerServiceImpl implements AnswerService {
 
     private final RedisTemplate redisTemplate;
     private final AnswerDao answerDao;
+    private final AnswerSupportDao answerSupportDao;
     private final ExecutorService executorService;
 
     @Autowired
-    public AnswerServiceImpl(AnswerDao answerDao, ExecutorService executorService, UserService userService,RedisTemplate redisTemplate){
+    public AnswerServiceImpl(AnswerDao answerDao, ExecutorService executorService, UserService userService, RedisTemplate redisTemplate, AnswerSupportDao answerSupportDao){
         locks = new ConcurrentHashMap<>();
         this.answerDao = answerDao;
         this.executorService = executorService;
         this.userService = userService;
         this.redisTemplate = redisTemplate;
+        this.answerSupportDao = answerSupportDao;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -289,6 +292,28 @@ public class AnswerServiceImpl implements AnswerService {
             }
         }else{
             redisTemplate.boundValueOps(key).set(answerOder);
+        }
+    }
+
+    @Override
+    public void supportAnswer(Long answerId, Long userId) {
+        synchronized (this){
+            boolean isSupport = userHasSupport(userId, answerId);
+            if(!isSupport){
+                answerSupportDao.supportAnswer(answerId,userId);
+                answerDao.incrementSupportSum(answerId);
+            }
+        }
+    }
+
+    @Override
+    public void unSupportAnswer(Long answerId, Long userId) {
+        synchronized (this){
+            boolean isSupport = userHasSupport(userId, answerId);
+            if(isSupport){
+                answerSupportDao.unSupportAnswer(answerId,userId);
+                answerDao.decrementSupportSum(answerId);
+            }
         }
     }
 }

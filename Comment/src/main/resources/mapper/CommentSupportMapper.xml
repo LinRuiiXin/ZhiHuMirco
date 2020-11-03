@@ -19,4 +19,12 @@
     <delete id="deleteAllAnswerCommentLvOneSupport">
         delete from answer_level_one_support where commentId = #{commentLvOneId}
     </delete>
+    <insert id="supportAnswerCommentLevelOne">
+        insert into answer_levle_one_support(commentId,userId)
+        values (#{commentLv1Id},#{userId})
+    </insert>
+    <insert id="supportAnswerCommentLevelTwo">
+        insert into answer_levle_two_support(commentId,userId)
+        values (#{commentLv2Id},#{userId})
+    </insert>
 </mapper>

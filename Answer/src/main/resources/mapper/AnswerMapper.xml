@@ -53,4 +53,11 @@
     <update id="updateAnswerCommentSum">
         update answer set commentSum = commentSum + 1 where id = #{answerId}
     </update>
+
+    <update id="incrementSupportSum">
+        update answer set supportSum = supportSum + 1 where id = #{answerId}
+    </update>
+    <update id="decrementSupportSum">
+        update answer set supportSum = supportSum - 1 where id = #{answerId}
+    </update>
 </mapper>

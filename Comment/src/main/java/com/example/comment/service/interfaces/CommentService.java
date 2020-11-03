@@ -48,7 +48,29 @@ public interface CommentService {
      * */
     int addAnswerCommentLevelTwo(Long commentLevelOneId,Long userId,Long replyUserId,String content);
 
-
+    /*
+    * 删除一级评论 此方法会删除一级评论及一级评论点赞及所有二级评论与点赞(异步)
+    * @commentLevelOneId 一级评论Id
+    * */
     void deleteAnswerCommentLevelOne(Long commentLevelOneId);
+
+    /*
+     * 删除二级评论 此方法会删除二级评论及所有点赞(异步)
+     * @commentLevelOneId 二级评论Id
+     * */
     void deleteAnswerCommentLevelTwo(Long commentLevelTwoId);
+
+    /*
+    * 点赞一级评论
+    * @commentLv1Id 一级评论Id
+    * @userId 用户Id
+    * */
+    void supportAnswerCommentLevelOne(Long commentLv1Id,Long userId);
+
+    /*
+    * 点赞二级评论
+    * @commentLv2Id 二级评论Id
+    * @userId 用户Id
+    * */
+    void supportAnswerCommentLevelTwo(Long commentLv2Id,Long userId);
 }

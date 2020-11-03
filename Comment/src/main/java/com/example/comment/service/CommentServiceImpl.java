@@ -130,6 +130,16 @@ public class CommentServiceImpl implements CommentService {
         commentSupportDao.deleteAllAnswerCommentLvTwoSupport(commentLevelTwoId);
     }
 
+    @Override
+    public void supportAnswerCommentLevelOne(Long commentLv1Id, Long userId) {
+
+    }
+
+    @Override
+    public void supportAnswerCommentLevelTwo(Long commentLv2Id, Long userId) {
+
+    }
+
 
     /*
      * 尝试获取二级评论锁，当用户为二级评论点赞，或删除二级评论时加锁

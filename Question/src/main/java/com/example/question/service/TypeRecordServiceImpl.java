@@ -24,6 +24,9 @@ public class TypeRecordServiceImpl implements TypeRecordService {
         this.typeRecordDao = typeRecordDao;
     }
 
+    /*
+    * 垃圾代码，需优化
+    * */
     @Override
     public List<Long> getUserRecordType(Long userId) {
         List<Long> typeRecord = typeRecordDao.queryUserTypeRecord(userId);

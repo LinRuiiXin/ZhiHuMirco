@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 
 /**
  * TODO
- *
+ * 线程池自动装配，默认分配100线程
  * @author LinRuiXin
  * @date 2020/10/31 3:41 下午
  */
