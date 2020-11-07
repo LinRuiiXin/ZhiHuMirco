@@ -1,11 +1,16 @@
 package com.example.question.service;
 
+import com.example.basic.po.Answer;
 import com.example.basic.po.Question;
+import com.example.basic.po.User;
 import com.example.basic.vo.RecommendQuestionViewBean;
+import com.example.basic.vo.RecommendViewBean;
 import com.example.question.dao.QuestionDao;
 import com.example.question.service.interfaces.ClassifyQuestionService;
 import com.example.question.service.interfaces.QuestionAttentionService;
 import com.example.question.service.interfaces.QuestionService;
+import com.example.question.service.interfaces.TypeRecordService;
+import com.example.question.service.rpc.AnswerService;
 import com.example.question.service.rpc.UserService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -30,14 +35,18 @@ public class QuestionServiceImpl implements QuestionService {
     private final RedisTemplate redisTemplate;
     private final QuestionAttentionService questionAttentionService;
     private final ClassifyQuestionService classifyQuestionService;
+    private final TypeRecordService typeRecordService;
+    private final AnswerService answerService;
 
-    public QuestionServiceImpl(AsyncService asyncService, QuestionDao questionDao, UserService userService, RedisTemplate redisTemplate, QuestionAttentionService questionAttentionService,ClassifyQuestionService classifyQuestionService) {
+    public QuestionServiceImpl(AsyncService asyncService, QuestionDao questionDao, UserService userService, RedisTemplate redisTemplate, QuestionAttentionService questionAttentionService, ClassifyQuestionService classifyQuestionService, TypeRecordService typeRecordService, AnswerService answerService) {
         this.asyncService = asyncService;
         this.questionDao = questionDao;
         this.userService = userService;
         this.redisTemplate = redisTemplate;
         this.questionAttentionService = questionAttentionService;
         this.classifyQuestionService = classifyQuestionService;
+        this.typeRecordService = typeRecordService;
+        this.answerService = answerService;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -96,4 +105,68 @@ public class QuestionServiceImpl implements QuestionService {
         asyncService.recordUserBrowse(questionType,userId);
     }
 
+    @Override
+    public List<RecommendViewBean> recommendQuestion(Long userId) {
+        int otherRecommend = 2;
+        List<RecommendViewBean> recommendViewBeans = new ArrayList<>();
+        if (userId != -1) {
+            List<Long> userRecordType = typeRecordService.getUserRecordType(userId);
+            List<Long> questionId = new ArrayList<>();
+            userRecordType.forEach(id -> {
+                questionId.addAll(classifyQuestionService.getRandomQuestion(id, 1));
+            });
+            questionId.stream().distinct().forEach(id -> {
+                RecommendViewBean randomAnswer = getRandomAnswerViewBeanByQuestion(id);
+                if (randomAnswer != null) {
+                    recommendViewBeans.add(randomAnswer);
+                }
+            });
+            if (recommendViewBeans.size() < 5) {
+                otherRecommend += 5 - recommendViewBeans.size();
+            }
+        } else {
+            otherRecommend = 5;
+        }
+        //获取指定个数的Answer并封装成RecommendViewBean
+        recommendViewBeans.addAll(getRandomAnswerViewBean(otherRecommend));
+        return recommendViewBeans;
+    }
+
+    public RecommendViewBean getRandomAnswerViewBeanByQuestion(Long id) {
+        Answer answer = answerService.queryRandomAnswerByQuestionId(id);
+        if (answer != null) {
+            RecommendViewBean viewBean = wrapAnswer(answer);
+            return viewBean;
+        }
+        return null;
+    }
+
+    public List<RecommendViewBean> getRandomAnswerViewBean(int sum) {
+        List<RecommendViewBean> recommendViewBeans = new ArrayList<>();
+        List<Answer> randomAnswer = answerService.getRandomAnswer(sum);
+        randomAnswer.forEach(answer -> {
+            recommendViewBeans.add(wrapAnswer(answer));
+        });
+        return recommendViewBeans;
+    }
+
+
+    private RecommendViewBean wrapAnswer(Answer answer) {
+        RecommendViewBean viewBean = new RecommendViewBean();
+        viewBean.setQuestionId(answer.getQuestionId());
+        viewBean.setContentType(1);
+        viewBean.setContent(answer.getContent());
+        viewBean.setThumbnail(answer.getThumbnail());
+        viewBean.setTitle(getQuestionTitle(answer.getQuestionId()));
+        viewBean.setSupportSum(answer.getSupportSum());
+        viewBean.setContentId(answer.getId());
+        viewBean.setType(answer.getContentType());
+        viewBean.setCommentSum(answer.getCommentSum());
+        User user = userService.getUserById(answer.getUserId());
+        viewBean.setUserId(user.getId());
+        viewBean.setUsername(user.getUserName());
+        viewBean.setPortraitFileName(user.getPortraitFileName());
+        viewBean.setIntroduction(user.getProfile());
+        return viewBean;
+    }
 }

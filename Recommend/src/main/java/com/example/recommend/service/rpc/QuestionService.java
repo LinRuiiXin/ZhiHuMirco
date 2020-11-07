@@ -1,5 +1,6 @@
 package com.example.recommend.service.rpc;
 
+import com.example.basic.vo.RecommendViewBean;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,12 +12,7 @@ import java.util.List;
 @RequestMapping("/API")
 public interface QuestionService {
 
-    @GetMapping("/Question/QuestionTitle/{questionId}")
-    String getQuestionTitle(@PathVariable("questionId") Long questionId);
+    @GetMapping("/Recommend/{userId}")
+    List<RecommendViewBean> recommendAnswer(@PathVariable("userId") Long userId);
 
-    @GetMapping("/TypeRecord/UserRecordType/{userId}")
-    List<Long> getUserRecordType(@PathVariable("userId") Long userId);
-
-    @GetMapping("/ClassifyQuestion/RandomQuestion/{typeId}/{sum}")
-    List<Long> getRandomQuestion(@PathVariable("typeId") Long typeId, @PathVariable("sum") int sum);
 }

@@ -1,4 +1,4 @@
-package com.example.recommend.service.rpc;
+package com.example.question.service.rpc;
 
 import com.example.basic.po.Answer;
 import org.springframework.cloud.openfeign.FeignClient;
