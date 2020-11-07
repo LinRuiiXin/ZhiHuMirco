@@ -33,6 +33,10 @@
         update answer_comment_level_one set hasReply = hasReply+1
         where id = #{commentLevelOneId}
     </update>
+    <delete id="deleteAnswerCommentLevelOne">
+        delete from answer_comment_level_one where
+        id = #{commentLevelOneId}
+    </delete>
 
     <delete id="deleteAnswerCommentLevelTwo">
         delete from answer_comment_level_two where id = #{commentLevelTwoId}
@@ -41,4 +45,29 @@
     <select id="getAnswerCommentLvTwoIdFromLvOneId" resultType="java.lang.Long">
         select id from answer_comment_level_two where levelOneId = #{levelOneId}
     </select>
+
+    <update id="incrementAnswerCommentLv1Support">
+        update answer_comment_level_one set supportSum = supportSum + 1
+        where id = #{commentId}
+    </update>
+
+    <update id="incrementAnswerCommentLv2Support">
+        update answer_comment_level_two set supportSum = supportSum + 1
+        where id = #{replyId}
+    </update>
+
+    <update id="decrementAnswerCommentLv1Support">
+        update answer_comment_level_one set supportSum = supportSum - 1
+        where id = #{commentId}
+    </update>
+
+    <update id="decrementAnswerCommentLv2Support">
+        update answer_comment_level_two set supportSum = supportSum - 1
+        where id = #{replyId}
+    </update>
+
+    <select id="getAnswerCommentLevelTwoIdByLv1Id" resultType="java.lang.Long">
+        select id from answer_comment_level_two where levelOneId = #{commentLv1Id}
+    </select>
+
 </mapper>

@@ -15,8 +15,11 @@ public interface CommentDao {
     Long answerCommentLevelOneExist(Long commentLevelOneId);
     void addAnswerCommentLevelTwo(@Param("commentLevelOneId")Long commentLevelOneId,@Param("userId")Long userId,@Param("replyUserId")Long replyId,@Param("content")String content);
     void deleteAnswerCommentLevelOne(Long commentLevelOneId);
-    //    一级评论回复数+1
-    void updateAnswerCommentLv1ReplySum(Long commentLevelOneId);
     void deleteAnswerCommentLevelTwo(Long commentLevelTwoId);
-    List<Long> getAnswerCommentLvTwoIdFromLvOneId(Long levelOneId);
+    void updateAnswerCommentLv1ReplySum(Long commentLevelOneId);
+    void incrementAnswerCommentLv1Support(Long commentId);
+    void incrementAnswerCommentLv2Support(Long replyId);
+    void decrementAnswerCommentLv1Support(Long commentId);
+    void decrementAnswerCommentLv2Support(Long replyId);
+    List<Long> getAnswerCommentLevelTwoIdByLv1Id(Long commentLv1Id);
 }

@@ -22,6 +22,7 @@
         <module>Comment</module>
         <module>Question</module>
         <module>User</module>
+        <module>Recommend</module>
     </modules>
 
     <dependencies>

@@ -15,6 +15,7 @@
         <module name="EurekaServer" />
         <module name="Answer" />
         <module name="Comment" />
+        <module name="Recommend" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -29,6 +30,7 @@
       <module name="EurekaServer" options="-parameters" />
       <module name="Gateway" options="-parameters" />
       <module name="Question" options="-parameters" />
+      <module name="Recommend" options="-parameters" />
       <module name="User" options="-parameters" />
       <module name="ZhiHuMirco" options="-parameters" />
     </option>

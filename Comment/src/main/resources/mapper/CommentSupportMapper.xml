@@ -10,7 +10,7 @@
     </select>
     <select id="hadSupportAnswerCommentLvTwo" resultType="java.lang.Long">
         select id from answer_level_two_support
-        where replyId = #{commentId} and userId = #{userId}
+        where replyId = #{replyId} and userId = #{userId}
         limit 1
     </select>
     <delete id="deleteAllAnswerCommentLvTwoSupport">
@@ -19,12 +19,24 @@
     <delete id="deleteAllAnswerCommentLvOneSupport">
         delete from answer_level_one_support where commentId = #{commentLvOneId}
     </delete>
+
     <insert id="supportAnswerCommentLevelOne">
-        insert into answer_levle_one_support(commentId,userId)
-        values (#{commentLv1Id},#{userId})
+        insert into answer_level_one_support(commentId,userId)
+        values (#{commentId},#{userId})
     </insert>
+
     <insert id="supportAnswerCommentLevelTwo">
-        insert into answer_levle_two_support(commentId,userId)
-        values (#{commentLv2Id},#{userId})
+        insert into answer_level_two_support(replyId,userId)
+        values (#{replyId},#{userId})
     </insert>
+
+    <delete id="unSupportAnswerCommentLevelOne">
+        delete from answer_level_one_support
+        where commentId = #{commentId} and userId = #{userId}
+    </delete>
+
+    <delete id="unSupportAnswerCommentLevelTwo">
+        delete from answer_level_two_support
+        where replyId = #{replyId} and userId = #{userId}
+    </delete>
 </mapper>

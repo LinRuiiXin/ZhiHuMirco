@@ -4,6 +4,8 @@ import com.example.basic.dto.SimpleDto;
 import com.example.basic.vo.AnswerCommentLevelOneVo;
 import com.example.basic.vo.AnswerCommentLevelTwoVo;
 import com.example.comment.service.interfaces.CommentService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,6 +88,70 @@ public class CommentController {
                 simpleDto = new SimpleDto(false,"无效状态码",null);
         }
         return simpleDto;
+    }
+
+    /*
+    * 点赞一级评论，点赞数+1
+    * @commentId 一级评论Id
+    * @userId 点赞用户Id
+    * */
+    @PostMapping("/LevelOne/Support")
+    public SimpleDto supportCommentLevelOne(@RequestParam Long commentId,@RequestParam Long userId){
+        commentService.supportAnswerCommentLevelOne(commentId,userId);
+        return new SimpleDto(true,null,null);
+    }
+
+    /*
+    * 取消一级评论点赞，点赞数-1
+    * @commentId 一级评论Id
+    * @userId 点赞用户Id
+    * */
+    @PostMapping("/LevelOne/UnSupport")
+    public SimpleDto unSupportCommentLevelOne(@RequestParam Long commentId,@RequestParam Long userId){
+        commentService.unSupportAnswerCommentLevelOne(commentId,userId);
+        return new SimpleDto(true,null,null);
+    }
+
+    /*
+    * 点赞二级评论，点赞数+1
+    * @replyId 回复Id，即对一级评论的回复
+    * @userId 点赞用户Id
+    * */
+    @PostMapping("/LevelTwo/Support")
+    public SimpleDto supportCommentLevelTwo(@RequestParam Long replyId,@RequestParam Long userId){
+        commentService.supportAnswerCommentLevelTwo(replyId,userId);
+        return new SimpleDto(true,null,null);
+    }
+
+    /*
+    * 取消点赞二级评论，点赞数-1
+    * @replyId 回复Id
+    * @userId 点赞用户Id
+    * */
+    @PostMapping("/LevelTwo/UnSupport")
+    public SimpleDto unSupportCommentLevelTwo(@RequestParam Long replyId,@RequestParam Long userId){
+        commentService.unSupportAnswerCommentLevelTwo(replyId,userId);
+        return new SimpleDto(true,null,null);
+    }
+
+    /*
+    * 删除一级评论
+    * @commentId 一级评论Id
+    * */
+    @DeleteMapping("/LevelOne")
+    public SimpleDto deleteAnswerCommentLevelOne(@RequestParam Long commentId){
+        commentService.deleteAnswerCommentLevelOne(commentId);
+        return new SimpleDto(true,null,null);
+    }
+
+    /*
+    * 删除二级评论
+    * @commentId 二级评论Id
+    * */
+    @DeleteMapping("/LevelTwo")
+    public SimpleDto deleteAnswerCommentLevelTwo(@RequestParam Long commentId){
+        commentService.deleteAnswerCommentLevelTwo(commentId);
+        return new SimpleDto(true,null,null);
     }
 }
 
