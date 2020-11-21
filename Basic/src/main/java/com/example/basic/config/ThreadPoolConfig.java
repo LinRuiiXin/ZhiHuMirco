@@ -14,7 +14,7 @@ public class ThreadPoolConfig {
     public int coreThread;
 
     public ThreadPoolConfig(){
-        this(100);
+        this(5);
     }
 
     public ThreadPoolConfig(int coreThread) {

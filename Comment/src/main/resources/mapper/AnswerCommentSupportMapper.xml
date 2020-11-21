@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.comment.dao.CommentSupportDao">
+<mapper namespace="com.example.comment.dao.AnswerCommentSupportDao">
     <select id="hadSupportAnswerCommentLvOne" resultType="java.lang.Long">
         select id from answer_level_one_support
         where commentId = #{commentId} and userId = #{userId}

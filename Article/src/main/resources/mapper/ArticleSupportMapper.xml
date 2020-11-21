@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.article.dao.ArticleSupportDao">
+    <select id="userHasSupportArticle" resultType="java.lang.Integer">
+        select 1 from article_support where userId = #{userId} and articleId = #{articleId} limit 1
+    </select>
+    <insert id="insertSupportRecord">
+        insert into article_support(articleId,userId,time)
+        values (#{articleId},#{userId},now())
+    </insert>
+    <delete id="deleteSupportRecord">
+        delete from article_support where
+        articleId = #{articleId} and userId = #{userId}
+    </delete>
+</mapper>

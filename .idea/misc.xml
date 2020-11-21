@@ -13,6 +13,8 @@
         <option value="$PROJECT_DIR$/Gateway/pom.xml" />
         <option value="$PROJECT_DIR$/Question/pom.xml" />
         <option value="$PROJECT_DIR$/Recommend/pom.xml" />
+        <option value="$PROJECT_DIR$/Upload/pom.xml" />
+        <option value="$PROJECT_DIR$/Article/pom.xml" />
       </list>
     </option>
   </component>

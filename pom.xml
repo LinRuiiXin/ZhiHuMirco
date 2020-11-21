@@ -23,6 +23,8 @@
         <module>Question</module>
         <module>User</module>
         <module>Recommend</module>
+        <module>Upload</module>
+        <module>Article</module>
     </modules>
 
     <dependencies>

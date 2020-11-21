@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CommentDao {
+public interface AnswerCommentDao {
     List<AnswerCommentLevelOne> getAnswerCommentLevelOne(Long answerId, int start);
     List<AnswerCommentLevelTwo> getAnswerCommentLevelTwo(@Param("levelOneId") Long levelOneId, @Param("start") int start);
     void addAnswerCommentLevelOne(@Param("answerId") Long answerId,@Param("userId")Long userId,@Param("content")String content);

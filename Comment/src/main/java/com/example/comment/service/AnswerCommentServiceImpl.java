@@ -5,9 +5,9 @@ import com.example.basic.po.AnswerCommentLevelTwo;
 import com.example.basic.vo.AnswerCommentLevelOneVo;
 import com.example.basic.vo.AnswerCommentLevelTwoVo;
 import com.example.comment.config.RabbitConfig;
-import com.example.comment.dao.CommentDao;
-import com.example.comment.dao.CommentSupportDao;
-import com.example.comment.service.interfaces.CommentService;
+import com.example.comment.dao.AnswerCommentDao;
+import com.example.comment.dao.AnswerCommentSupportDao;
+import com.example.comment.service.interfaces.AnswerCommentService;
 import com.example.comment.service.rpc.AnswerService;
 import com.example.comment.service.rpc.UserService;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -27,19 +27,19 @@ import java.util.concurrent.ExecutorService;
  * @date 2020/10/26 10:43 下午
  */
 @Service
-public class CommentServiceImpl implements CommentService {
+public class AnswerCommentServiceImpl implements AnswerCommentService {
 
     private final AmqpTemplate amqpTemplate;
-    private CommentDao commentDao;
-    private UserService userService;
-    private CommentSupportDao commentSupportDao;
+    private final AnswerCommentDao commentDao;
+    private final UserService userService;
+    private final AnswerCommentSupportDao commentSupportDao;
     private final StringRedisTemplate redisTemplate;
     private final AnswerService answerService;
     private final ExecutorService executorService;
 
 
     @Autowired
-    public CommentServiceImpl(CommentDao commentDao, UserService userService, CommentSupportDao commentSupportDao, StringRedisTemplate redisTemplate, AnswerService answerService, ExecutorService executorService, AmqpTemplate amqpTemplate) {
+    public AnswerCommentServiceImpl(AnswerCommentDao commentDao, UserService userService, AnswerCommentSupportDao commentSupportDao, StringRedisTemplate redisTemplate, AnswerService answerService, ExecutorService executorService, AmqpTemplate amqpTemplate) {
         this.commentDao = commentDao;
         this.userService = userService;
         this.commentSupportDao = commentSupportDao;
@@ -140,7 +140,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteAnswerCommentLevelOne(Long commentLevelOneId) {
         commentDao.deleteAnswerCommentLevelOne(commentLevelOneId);
-        amqpTemplate.convertAndSend(RabbitConfig.COMMENT_EXCHANGE,RabbitConfig.COMMENT_LEVEL_ONE_QUEUE,commentLevelOneId);
+        amqpTemplate.convertAndSend(RabbitConfig.COMMENT_EXCHANGE,RabbitConfig.ANSWER_COMMENT_LEVEL_ONE_QUEUE,commentLevelOneId);
     }
 
     /*
@@ -150,7 +150,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteAnswerCommentLevelTwo(Long commentLevelTwoId) {
         commentDao.deleteAnswerCommentLevelTwo(commentLevelTwoId);
-        amqpTemplate.convertAndSend(RabbitConfig.COMMENT_EXCHANGE,RabbitConfig.COMMENT_LEVEL_TWO_QUEUE,commentLevelTwoId);
+        amqpTemplate.convertAndSend(RabbitConfig.COMMENT_EXCHANGE,RabbitConfig.ANSWER_COMMENT_LEVEL_TWO_QUEUE,commentLevelTwoId);
     }
 
     /*

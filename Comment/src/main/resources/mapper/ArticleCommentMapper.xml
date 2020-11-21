@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.comment.dao.ArticleCommentDao">
+    <insert id="addLevelOne">
+        insert into article_comment_level_one(articleId,userId,content,supportSum,hasReply,time)
+        values (#{articleId},#{userId},#{content},0,0,now())
+    </insert>
+    <insert id="addLevelTwo">
+        insert into article_comment_level_two(levelOneId,replyToUserId,replyUserId,content,supportSum,time)
+        values (#{levelOneId},#{replyToUserId},#{replyUserId},#{content},0,now())
+    </insert>
+    <update id="incrementLevelOneReplySum">
+        update article_comment_level_one set hasReply = hasReply + 1 where id = #{levelOneId}
+    </update>
+    <update id="decrementLevelOneReplySum">
+        update article_comment_level_one set hasReply = hasReply - 1 where id = #{levelOneId}
+    </update>
+
+    <select id="getLevelOne" resultType="articleCommentLevelOne">
+        select * from article_comment_level_one
+        where articleId = #{articleId}
+        order by supportSum desc, id asc
+        limit #{start},10
+    </select>
+
+    <update id="incrementLevelOneSupportSum">
+        update article_comment_level_one set
+        supportSum = supportSum + 1
+        where id = #{commentId}
+    </update>
+    <update id="decrementLevelOneSupportSum">
+        update article_comment_level_one set
+        supportSum = supportSum - 1
+        where id = #{commentId}
+    </update>
+    <update id="incrementLevelTwoSupportSum">
+        update article_comment_level_two set
+        supportSum = supportSum + 1
+        where id = #{replyId}
+    </update>
+    <update id="decrementLevelTwoSupportSum">
+        update article_comment_level_two set
+        supportSum = supportSum - 1
+        where id = #{replyId}
+    </update>
+    <select id="getLevelTwo" resultType="articleCommentLevelTwo">
+        select * from article_comment_level_two
+        where levelOneId = #{levelOneId}
+        order by supportSum desc, id asc
+        limit #{start},10
+    </select>
+    <delete id="deleteLevelOne">
+        delete from article_comment_level_one
+        where id = #{commentId}
+    </delete>
+    <select id="getReplyIdsByCommentId" resultType="java.lang.Long">
+        select id from article_comment_level_two
+        where levelOneId = #{commentId}
+    </select>
+    <delete id="deleteLevelTwo">
+        delete from article_comment_level_two
+        where id = #{replyId}
+    </delete>
+</mapper>

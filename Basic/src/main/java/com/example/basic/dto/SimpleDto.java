@@ -11,6 +11,13 @@ public class SimpleDto {
         this.object = object;
     }
 
+    public static SimpleDto SUCCESS(){
+        return new SimpleDto(true,null,null);
+    }
+    public static SimpleDto FAILED(){
+        return new SimpleDto(false,null,null);
+    }
+
     public boolean isRespCode() {
         return respCode;
     }

@@ -3,7 +3,7 @@ package com.example.comment.dao;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CommentSupportDao {
+public interface AnswerCommentSupportDao {
     /*
      * 查询用户是否为该一级评论点赞，返回数据条目，如果找到一条即代表用户已点赞，因此不继续查询
      * @commentId 评论Id

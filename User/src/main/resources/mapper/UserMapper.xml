@@ -27,4 +27,13 @@
     <select id="queryUserById" resultType="user">
         select id,userName,mail,followSum,fensSum,collectSum,profile,portraitFileName,registerDate from user where id = #{id}
     </select>
+    <update id="updateUserPassword">
+        update user set password = #{password} where id = #{id}
+    </update>
+    <select id="queryPasswordById" resultType="java.lang.String">
+        select password from user where id = #{id}
+    </select>
+    <select id="whetherTheUserIsFollowed" resultType="java.lang.Integer">
+        select 1 from attention where userId = #{userId} and beAttentionUserId = #{beAttentionUserId} limit 1
+    </select>
 </mapper>

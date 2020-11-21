@@ -14,4 +14,7 @@ public interface UserDao {
     Long getUserIdByPhone(String phone);
     void setPortraitFileName(@Param("id") Long id, @Param("fileName") String fileName);
     User queryUserById(Long id);
+    void updateUserPassword(@Param("id") Long id,@Param("password") String password);
+    String queryPasswordById(Long id);
+    Integer whetherTheUserIsFollowed(Long beAttentionUserId,Long userId);
 }

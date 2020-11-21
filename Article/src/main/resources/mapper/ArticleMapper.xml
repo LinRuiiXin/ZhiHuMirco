@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.article.dao.ArticleDao">
+    <insert id="addArticle" parameterType="article" keyProperty="id" useGeneratedKeys="true">
+        insert into article(authorId,title,content,thumbnail,contentType,supportSum,commentSum)
+        values (#{authorId},#{title},#{content},#{thumbnail},#{contentType},0,0)
+    </insert>
+    <select id="getArticleById" resultType="article">
+        select * from article where id = #{id};
+    </select>
+    <select id="getAuthorId" resultType="java.lang.Long">
+        select authorId from article where id = #{id}
+    </select>
+    <update id="incrementSupportSum">
+        update article set supportSum = supportSum + 1 where id = #{articleId}
+    </update>
+    <update id="decrementSupportSum">
+        update article set supportSum = supportSum - 1 where id = #{articleId}
+    </update>
+    <update id="incrementCommentSum">
+        update article set commentSum = commentSum + 1 where id = #{articleId}
+    </update>
+    <update id="decrementCommentSum">
+        update article set commentSum = commentSum - 1 where id = #{articleId}
+    </update>
+</mapper>

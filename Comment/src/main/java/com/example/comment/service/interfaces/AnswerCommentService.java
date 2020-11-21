@@ -11,7 +11,7 @@ import java.util.List;
  * @author LinRuiXin
  * @date 2020/10/26 10:43 下午
  */
-public interface CommentService {
+public interface AnswerCommentService {
 
     List<AnswerCommentLevelOneVo> getAnswerCommentLevelOne(Long answerId, Long userId, int limit);
 

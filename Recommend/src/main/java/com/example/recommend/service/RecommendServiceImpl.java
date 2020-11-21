@@ -1,16 +1,10 @@
 package com.example.recommend.service;
 
-import com.example.basic.po.Answer;
-import com.example.basic.po.Article;
-import com.example.basic.po.User;
 import com.example.basic.vo.RecommendViewBean;
 import com.example.recommend.service.interfaces.RecommendService;
 import com.example.recommend.service.rpc.*;
-import com.example.recommend.util.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**

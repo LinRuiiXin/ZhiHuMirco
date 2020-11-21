@@ -6,12 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Article" />
         <module name="ZhiHuMirco" />
         <module name="User" />
         <module name="ZhiHuMicro-Basic" />
         <module name="Basic" />
         <module name="Gateway" />
         <module name="Question" />
+        <module name="Upload" />
         <module name="EurekaServer" />
         <module name="Answer" />
         <module name="Comment" />
@@ -25,12 +27,14 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Answer" options="-parameters" />
+      <module name="Article" options="-parameters" />
       <module name="Basic" options="-parameters" />
       <module name="Comment" options="-parameters" />
       <module name="EurekaServer" options="-parameters" />
       <module name="Gateway" options="-parameters" />
       <module name="Question" options="-parameters" />
       <module name="Recommend" options="-parameters" />
+      <module name="Upload" options="-parameters" />
       <module name="User" options="-parameters" />
       <module name="ZhiHuMirco" options="-parameters" />
     </option>

@@ -2,9 +2,12 @@ package com.example.user.controller;
 
 import com.example.basic.dto.SimpleDto;
 import com.example.basic.po.User;
+import com.example.basic.status.ChangePassword;
+import com.example.basic.util.FileUtils;
 import com.example.user.service.AsyncService;
 import com.example.user.service.interfaces.UserService;
 import com.example.user.util.FileUtil;
+import com.example.user.util.RegexUtil;
 import com.example.user.util.SecurityCodeUtil;
 import com.example.user.validator.UserValidator;
 import io.swagger.annotations.Api;
@@ -24,6 +27,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.example.basic.status.ChangePassword.FORMAT_WRONG;
+import static com.example.basic.status.ChangePassword.SUCCESS;
 
 /**
  * TODO
@@ -122,6 +128,24 @@ public class UserController {
         }else{
             return new SimpleDto(true,null,user);
         }
+    }
+
+
+    @PostMapping("/ChangePassword")
+    public SimpleDto changePassword(@RequestParam Long userId,@RequestParam String password,@RequestParam String newPassword){
+        ChangePassword status  = RegexUtil.validatePassword(newPassword) ? userService.changePassword(userId,password,newPassword) :FORMAT_WRONG ;
+        SimpleDto simpleDto = new SimpleDto(status == SUCCESS, null, null);
+        switch (status){
+            case SUCCESS:
+                simpleDto.setMsg("修改成功");break;
+            case FORMAT_WRONG:
+                simpleDto.setMsg("密码格式错误");break;
+            case WRONG_PASSWORD:
+                simpleDto.setMsg("密码错误");break;
+            case FAILED:
+                simpleDto.setMsg("修改失败");break;
+        }
+        return simpleDto;
     }
 
     @ApiOperation("校验密码、邮箱地址、电话号码，插入数据")

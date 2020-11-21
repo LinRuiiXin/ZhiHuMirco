@@ -3,9 +3,7 @@ package com.example.comment.controller;
 import com.example.basic.dto.SimpleDto;
 import com.example.basic.vo.AnswerCommentLevelOneVo;
 import com.example.basic.vo.AnswerCommentLevelTwoVo;
-import com.example.comment.service.interfaces.CommentService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import com.example.comment.service.interfaces.AnswerCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +17,12 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/Comment")
-public class CommentController {
-    private final CommentService commentService;
+@RequestMapping("/AnswerComment")
+public class AnswerCommentController {
+    private final AnswerCommentService commentService;
 
     @Autowired
-    public CommentController(CommentService commentService){
+    public AnswerCommentController(AnswerCommentService commentService){
         this.commentService = commentService;
     }
 

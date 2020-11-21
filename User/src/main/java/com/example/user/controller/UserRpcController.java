@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+
 @Api("为其他微服务提供用户服务的接口")
 @RestController
 @RequestMapping("/API")
@@ -29,5 +34,20 @@ public class UserRpcController {
         return userService.getUserById(id);
     }
 
+    @GetMapping("/Batch/{ids}")
+    public List<User> getUserBatch(@PathVariable String ids){
+        String[] split = ids.split("-");
+        List<User> users = new ArrayList<>();
+        for(String str : split){
+            users.add(userService.getUserById(Long.valueOf(str)));
+        }
+        return users;
+    }
+
+    @ApiOperation("查询某个用户是否被另一个用户关注")
+    @GetMapping("/IsAttention/{beAttentionUserId}/{userId}")
+    public boolean whetherTheUserIsFollowed(@ApiParam("被关注用户Id")@PathVariable Long beAttentionUserId,@ApiParam("用户Id")@PathVariable Long userId){
+        return userService.whetherTheUserIsFollowed(beAttentionUserId,userId);
+    }
 }
 

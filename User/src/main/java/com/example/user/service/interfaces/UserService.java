@@ -2,14 +2,27 @@ package com.example.user.service.interfaces;
 
 
 import com.example.basic.po.User;
+import com.example.basic.status.ChangePassword;
 
 public interface UserService {
-    public boolean mailHasRegistered(String mail);
-    public User insertUser(User user);
-    public boolean nameHasRegistered(String userName);
-    public User queryUserByMail(String mail);
-    public User queryUserByMailPassword(String mail,String password);
-    public boolean phoneHasRegistered(String phone);
-    public void setPortraitFileNameById(Long id,String fileName);
-    public User getUserById(Long id);
+    boolean mailHasRegistered(String mail);
+
+    User insertUser(User user);
+
+    boolean nameHasRegistered(String userName);
+
+    User queryUserByMail(String mail);
+
+    User queryUserByMailPassword(String mail, String password);
+
+    boolean phoneHasRegistered(String phone);
+
+    void setPortraitFileNameById(Long id, String fileName);
+
+    User getUserById(Long id);
+
+    ChangePassword changePassword(Long userId, String password, String newPassword);
+
+    boolean whetherTheUserIsFollowed(Long beAttentionUserId,Long userId);
+
 }

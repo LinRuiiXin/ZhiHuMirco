@@ -44,7 +44,7 @@
         select id from answer where questionId = #{questionId} order by supportSum desc,id asc
     </select>
     <select id="userHasAttention" resultType="java.lang.Integer">
-        select 1 from attention where userId = #{userId} and answererId = #{answererId} limit 1
+        select 1 from attention where userId = #{userId} and beAttentionUserId = #{answererId} limit 1
     </select>
     <select id="userHasSupport" resultType="java.lang.Integer">
         select 1 from answer_support where userId = #{userId} and answerId = #{answerId} limit 1

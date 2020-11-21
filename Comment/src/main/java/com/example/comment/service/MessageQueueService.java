@@ -1,9 +1,12 @@
 package com.example.comment.service;
 
 import com.example.comment.config.RabbitConfig;
-import com.example.comment.dao.CommentDao;
-import com.example.comment.dao.CommentSupportDao;
-import com.example.comment.service.interfaces.CommentService;
+import com.example.comment.dao.AnswerCommentDao;
+import com.example.comment.dao.AnswerCommentSupportDao;
+import com.example.comment.dao.ArticleCommentDao;
+import com.example.comment.dao.ArticleCommentSupportDao;
+import com.example.comment.service.interfaces.AnswerCommentService;
+import com.example.comment.service.interfaces.ArticleCommentService;
 import com.rabbitmq.client.Channel;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Message;
@@ -24,16 +27,22 @@ import java.util.List;
 public class MessageQueueService {
 
     private final AmqpTemplate amqpTemplate;
-    private final CommentDao commentDao;
-    private final CommentSupportDao commentSupportDao;
-    private final CommentService commentService;
+    private final AnswerCommentDao answerCommentDao;
+    private final AnswerCommentSupportDao answerCommentSupportDao;
+    private final AnswerCommentService answerCommentService;
+    private final ArticleCommentDao articleCommentDao;
+    private final ArticleCommentSupportDao articleCommentSupportDao;
+    private final ArticleCommentService articleCommentService;
 
     @Autowired
-    public MessageQueueService(AmqpTemplate amqpTemplate, CommentDao commentDao, CommentSupportDao commentSupportDao, CommentService commentService) {
+    public MessageQueueService(AmqpTemplate amqpTemplate, AnswerCommentDao answerCommentDao, AnswerCommentSupportDao answerCommentSupportDao, AnswerCommentService answerCommentService, ArticleCommentDao articleCommentDao, ArticleCommentSupportDao articleCommentSupportDao, ArticleCommentService articleCommentService) {
         this.amqpTemplate = amqpTemplate;
-        this.commentDao = commentDao;
-        this.commentSupportDao = commentSupportDao;
-        this.commentService = commentService;
+        this.answerCommentDao = answerCommentDao;
+        this.answerCommentSupportDao = answerCommentSupportDao;
+        this.answerCommentService = answerCommentService;
+        this.articleCommentDao = articleCommentDao;
+        this.articleCommentSupportDao = articleCommentSupportDao;
+        this.articleCommentService = articleCommentService;
     }
 
     /*
@@ -42,18 +51,30 @@ public class MessageQueueService {
     * @message 不知道
     * @channel 不知道
     * */
-    @RabbitListener(queues = {RabbitConfig.COMMENT_LEVEL_ONE_QUEUE})
-    public void listenCommentLevelOneQueue(Long msg, Message message, Channel channel){
-        commentSupportDao.deleteAllAnswerCommentLvOneSupport(msg);
-        List<Long> replyIds = commentDao.getAnswerCommentLevelTwoIdByLv1Id(msg);
-        replyIds.forEach(commentService::deleteAnswerCommentLevelTwo);
+    @RabbitListener(queues = {RabbitConfig.ANSWER_COMMENT_LEVEL_ONE_QUEUE})
+    public void listenAnswerLevelOneQueue(Long msg, Message message, Channel channel){
+        answerCommentSupportDao.deleteAllAnswerCommentLvOneSupport(msg);
+        List<Long> replyIds = answerCommentDao.getAnswerCommentLevelTwoIdByLv1Id(msg);
+        replyIds.forEach(answerCommentService::deleteAnswerCommentLevelTwo);
     }
 
     /*
     * 二级评论删除后，将二级评论所有的点赞删除
     * */
-    @RabbitListener(queues = {RabbitConfig.COMMENT_LEVEL_TWO_QUEUE})
-    public void listenCommentLevelTwoQueue(Long msg, Message message, Channel channel){
-        commentSupportDao.deleteAllAnswerCommentLvTwoSupport(msg);
+    @RabbitListener(queues = {RabbitConfig.ANSWER_COMMENT_LEVEL_TWO_QUEUE})
+    public void listenAnswerLevelTwoQueue(Long msg, Message message, Channel channel){
+        answerCommentSupportDao.deleteAllAnswerCommentLvTwoSupport(msg);
+    }
+
+    @RabbitListener(queues = {RabbitConfig.ARTICLE_COMMENT_LEVEL_ONE_QUEUE})
+    public void listenArticleLevelOneQueue(Long msg, Message message, Channel channel){
+        articleCommentSupportDao.deleteAllLevelOneSupport(msg);
+        List<Long> replyIds = articleCommentDao.getReplyIdsByCommentId(msg);
+        replyIds.forEach(articleCommentService::deleteLevelTwo);
+    }
+
+    @RabbitListener(queues = {RabbitConfig.ARTICLE_COMMENT_LEVEL_TWO_QUEUE})
+    public void listenArticleLevelTwoQueue(Long msg, Message message, Channel channel){
+        articleCommentSupportDao.deleteAllLevelTwoSupport(msg);
     }
 }

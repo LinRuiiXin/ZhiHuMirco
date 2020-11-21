@@ -6,9 +6,9 @@ import com.example.basic.po.User;
 
 public class AnswerCommentLevelTwoVo {
     private boolean isSupport;
-    private AnswerCommentLevelTwo answerCommentLevelTwo;
     private User userReplyTo;
     private User replyUser;
+    private AnswerCommentLevelTwo answerCommentLevelTwo;
 
     public boolean isSupport() {
         return isSupport;
