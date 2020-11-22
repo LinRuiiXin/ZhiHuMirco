@@ -137,6 +137,60 @@ public class RecommendViewBean {
         this.commentSum = commentSum;
     }
 
+    public RecommendViewBean contentId(Long contentId){
+        this.contentId = contentId;
+        return this;
+    }
+    public RecommendViewBean questionId(Long questionId){
+        this.questionId = questionId;
+        return this;
+    }
+    public RecommendViewBean userId(Long userId){
+        this.userId = userId;
+        return this;
+    }
+    public RecommendViewBean contentType(int contentType){
+        this.contentType = contentType;
+        return this;
+    }
+    public RecommendViewBean type(int type){
+        this.type = type;
+        return this;
+    }
+    public RecommendViewBean title(String title){
+        this.title = title;
+        return this;
+    }
+    public RecommendViewBean username(String username){
+        this.username = username;
+        return this;
+    }
+    public RecommendViewBean portraitFileName(String portraitFileName){
+        this.portraitFileName = portraitFileName;
+        return this;
+    }
+    public RecommendViewBean introduction(String introduction){
+        this.introduction = introduction;
+        return this;
+    }
+    public RecommendViewBean content(String content){
+        this.content = content;
+        return this;
+    }
+    public RecommendViewBean thumbnail(String thumbnail){
+        this.thumbnail = thumbnail;
+        return this;
+    }
+    public RecommendViewBean supportSum(Long supportSum){
+        this.supportSum = supportSum;
+        return this;
+    }
+    public RecommendViewBean commentSum(Long commentSum){
+        this.commentSum = commentSum;
+        return this;
+    }
+
+
     @Override
     public String toString() {
         return "RecommendViewBean{" +

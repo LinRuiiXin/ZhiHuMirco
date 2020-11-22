@@ -22,4 +22,13 @@
     <select id="getQuestionNameById" resultType="java.lang.String">
         select name from question where id = #{questionId}
     </select>
+    <select id="getQuestionById" resultType="question">
+        select * from question where id = #{questionId}
+    </select>
+    <update id="incrementSubscribeSum">
+        update question set subscribeSum = subscribeSum + 1 where id = #{questionId}
+    </update>
+    <update id="decrementSubscribeSum">
+        update question set subscribeSum = subscribeSum - 1 where id = #{questionId}
+    </update>
 </mapper>

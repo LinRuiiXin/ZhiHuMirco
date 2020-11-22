@@ -1,6 +1,7 @@
 package com.example.question.service.interfaces;
 
 import com.example.basic.po.Question;
+import com.example.basic.vo.QuestionInfoVo;
 import com.example.basic.vo.RecommendQuestionViewBean;
 import com.example.basic.vo.RecommendViewBean;
 
@@ -15,4 +16,7 @@ public interface QuestionService {
     String getQuestionTitle(Long questionId);
     void recordUserBrowse(Long questionId,Long userId);
     List<RecommendViewBean> recommendQuestion(Long userId);
+    QuestionInfoVo getQuestionInfo(Long questionId, Long userId);
+    void incrementSubscribeSum(Long questionId);
+    void decrementSubscribeSum(Long questionId);
 }

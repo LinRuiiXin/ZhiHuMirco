@@ -7,7 +7,9 @@ import com.example.answer.service.rpc.UserService;
 import com.example.basic.dto.SimpleDto;
 import com.example.basic.po.Answer;
 import com.example.basic.po.User;
+import com.example.basic.util.StringUtils;
 import com.example.basic.vo.AnswerVo;
+import com.example.basic.vo.RecommendViewBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -57,7 +59,7 @@ public class AnswerServiceImpl implements AnswerService {
     public SimpleDto insertAnswer(MultipartFile file, Answer answer) {
         try {
             answerDao.insertAnswer(answer);
-            File newFile = new File("/Answer/" + answer.getId() + ".txt");
+            File newFile = new File("/Users/linruixin/Desktop/upload/ZhiHu/Answer/" + answer.getId() + ".txt");
             file.transferTo(newFile);
             updateAnswerOrder(answer.getQuestionId());
             return new SimpleDto(true,null,null);
@@ -111,7 +113,7 @@ public class AnswerServiceImpl implements AnswerService {
         List<Long> candidateId = getCandidateId(questionId, id, 2);
         candidateId.add(0,id);
         System.out.println(candidateId);
-        List<AnswerVo> answerBatch = getAnswerBatch(userId,candidateId);
+        List<AnswerVo> answerBatch = getAnswerVoBatch(userId,candidateId);
         return answerBatch;
     }
 
@@ -213,7 +215,7 @@ public class AnswerServiceImpl implements AnswerService {
         }
         return null;
     }
-    private List<AnswerVo> getAnswerBatch(Long userId,List<Long> ids) throws ExecutionException, InterruptedException {
+    private List<AnswerVo> getAnswerVoBatch(Long userId,List<Long> ids) throws ExecutionException, InterruptedException {
         List<Future<String>> futures = getContentBatch(ids);
         List<AnswerVo> res = new ArrayList<>();
         ids.forEach(id-> {
@@ -315,5 +317,62 @@ public class AnswerServiceImpl implements AnswerService {
                 answerDao.decrementSupportSum(answerId);
             }
         }
+    }
+
+    @Override
+    public List<RecommendViewBean> getOrderAnswerViewBean(Long questionId, int limit) throws NoSuchFieldException, IllegalAccessException {
+        List<Long> answerIds = getOrderAnswerIds(questionId,limit,10);
+        List<RecommendViewBean> res = new ArrayList<>(answerIds.size());
+        if(answerIds.size() > 0){
+            List<Answer> answers = getAnswerBatch(answerIds);
+            List<User> users = userService.getUserBatch(StringUtils.jointString('-', answers, "userId"));
+            for (int i = 0; i < answerIds.size(); i++) {
+                Answer answer = answers.get(i);
+                User user = users.get(i);
+                RecommendViewBean recommendViewBean = convertRecommendViewBean(answer,user);
+                res.add(recommendViewBean);
+            }
+        }
+        return res;
+    }
+
+    private RecommendViewBean convertRecommendViewBean(Answer answer, User user) {
+        return new RecommendViewBean()
+                .contentId(answer.getId())
+                .questionId(answer.getQuestionId())
+                .userId(answer.getUserId())
+                .contentType(1)
+                .type(answer.getContentType())
+                .username(user.getUserName())
+                .portraitFileName(user.getPortraitFileName())
+                .introduction(user.getProfile())
+                .content(answer.getContent())
+                .thumbnail(answer.getThumbnail())
+                .supportSum(answer.getSupportSum())
+                .commentSum(answer.getCommentSum());
+    }
+
+    private List<Answer> getAnswerBatch(List<Long> answerIds) {
+        List<Answer> res = new ArrayList<>(answerIds.size());
+        answerIds.forEach(id -> res.add(answerDao.queryFullAnswerById(id)));
+        return res;
+    }
+
+    /*
+    * 获取某个问题下的回答Id，按点赞数降序，Id升序
+    * @questionId 问题Id
+    * @limit 起始下标
+    * @len 长度
+    * */
+    private List<Long> getOrderAnswerIds(Long questionId, int limit, int len) {
+        List<Long> answerOrder = getAnswerOrder(questionId);
+        List<Long> answerIds = new ArrayList<>(10);
+        for (int i = 0; i < len; i++) {
+            int index = limit + i;
+            if(index < answerOrder.size()){
+                answerIds.add(answerOrder.get(index));
+            }
+        }
+        return answerIds;
     }
 }

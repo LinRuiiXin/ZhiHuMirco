@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * TODO
- *
+ * "文章" 评论点赞、增加以及删除，大致API与 "回答" 的相似 因此不写注释了
  * @author LinRuiXin
  * @date 2020/11/18 9:00 上午
  */

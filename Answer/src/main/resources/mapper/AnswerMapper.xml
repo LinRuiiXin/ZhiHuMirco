@@ -40,6 +40,10 @@
         select id,questionId,userId,supportSum,commentSum,time from answer where id = #{id}
     </select>
 
+    <select id="queryFullAnswerById" resultType="answer">
+        select * from answer where id = #{answerId}
+    </select>
+
     <select id="getAnswerOrder" resultType="java.lang.Long">
         select id from answer where questionId = #{questionId} order by supportSum desc,id asc
     </select>

@@ -3,6 +3,7 @@ package com.example.answer.service.interfaces;
 import com.example.basic.dto.SimpleDto;
 import com.example.basic.po.Answer;
 import com.example.basic.vo.AnswerVo;
+import com.example.basic.vo.RecommendViewBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,4 +24,5 @@ public interface AnswerService {
     void updateAnswerOrder(Long questionId);
     void supportAnswer(Long answerId,Long userId);
     void unSupportAnswer(Long answerId,Long userId);
+    List<RecommendViewBean> getOrderAnswerViewBean(Long questionId,int limit) throws NoSuchFieldException, IllegalAccessException;
 }

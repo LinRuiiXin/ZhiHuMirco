@@ -13,4 +13,7 @@ public interface QuestionDao {
     void incrementAnswer(Long questionId);
     void disSubscribeQuestion(Long questionId);
     String getQuestionNameById(Long questionId);
+    Question getQuestionById(Long questionId);
+    void incrementSubscribeSum(Long questionId);
+    void decrementSubscribeSum(Long questionId);
 }

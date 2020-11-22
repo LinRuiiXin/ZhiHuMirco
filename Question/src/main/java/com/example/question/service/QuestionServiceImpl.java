@@ -3,6 +3,8 @@ package com.example.question.service;
 import com.example.basic.po.Answer;
 import com.example.basic.po.Question;
 import com.example.basic.po.User;
+import com.example.basic.util.FileUtils;
+import com.example.basic.vo.QuestionInfoVo;
 import com.example.basic.vo.RecommendQuestionViewBean;
 import com.example.basic.vo.RecommendViewBean;
 import com.example.question.dao.QuestionDao;
@@ -12,6 +14,7 @@ import com.example.question.service.interfaces.QuestionService;
 import com.example.question.service.interfaces.TypeRecordService;
 import com.example.question.service.rpc.AnswerService;
 import com.example.question.service.rpc.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -29,16 +32,18 @@ import java.util.List;
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
+    @Autowired
+    private QuestionAttentionService questionAttentionService;
+
     private final AsyncService asyncService;
     private final QuestionDao questionDao;
     private final UserService userService;
     private final RedisTemplate redisTemplate;
-    private final QuestionAttentionService questionAttentionService;
     private final ClassifyQuestionService classifyQuestionService;
     private final TypeRecordService typeRecordService;
     private final AnswerService answerService;
 
-    public QuestionServiceImpl(AsyncService asyncService, QuestionDao questionDao, UserService userService, RedisTemplate redisTemplate, QuestionAttentionService questionAttentionService, ClassifyQuestionService classifyQuestionService, TypeRecordService typeRecordService, AnswerService answerService) {
+    public QuestionServiceImpl(AsyncService asyncService, QuestionDao questionDao, UserService userService, RedisTemplate redisTemplate, ClassifyQuestionService classifyQuestionService, TypeRecordService typeRecordService, AnswerService answerService) {
         this.asyncService = asyncService;
         this.questionDao = questionDao;
         this.userService = userService;
@@ -130,6 +135,32 @@ public class QuestionServiceImpl implements QuestionService {
         //获取指定个数的Answer并封装成RecommendViewBean
         recommendViewBeans.addAll(getRandomAnswerViewBean(otherRecommend));
         return recommendViewBeans;
+    }
+
+    @Override
+    public QuestionInfoVo getQuestionInfo(Long questionId, Long userId) {
+        QuestionInfoVo questionInfoVo = new QuestionInfoVo();
+        Question questionById = questionDao.getQuestionById(questionId);
+        String describe = questionById.getHasDescribe() != 0 ? getQuestionDescribe(questionId) : null;
+        boolean isAttention = userId != -1 ? questionAttentionService.hasAttention(userId,questionId) : false;
+        questionInfoVo.setQuestion(questionById);
+        questionInfoVo.setDescribe(describe);
+        questionInfoVo.setAttention(isAttention);
+        return questionInfoVo;
+    }
+
+    @Override
+    public void incrementSubscribeSum(Long questionId) {
+
+    }
+
+    @Override
+    public void decrementSubscribeSum(Long questionId) {
+
+    }
+
+    private String getQuestionDescribe(Long questionId) {
+        return FileUtils.getTextFile(FileUtils.RES_QUESTION,String.valueOf(questionId));
     }
 
     public RecommendViewBean getRandomAnswerViewBeanByQuestion(Long id) {

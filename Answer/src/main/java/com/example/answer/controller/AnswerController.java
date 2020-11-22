@@ -5,6 +5,8 @@ import com.example.answer.service.rpc.UserService;
 import com.example.basic.dto.SimpleDto;
 import com.example.basic.po.Answer;
 import com.example.basic.vo.AnswerVo;
+import com.example.basic.vo.RecommendViewBean;
+import org.hibernate.validator.constraints.LuhnCheck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,5 +77,11 @@ public class AnswerController {
     public SimpleDto unSupportAnswer(@RequestParam Long answerId,@RequestParam Long userId){
         answerService.unSupportAnswer(answerId,userId);
         return new SimpleDto(true,null,null);
+    }
+
+    @GetMapping("/Order/{questionId}/{limit}")
+    public SimpleDto getOrderAnswer(@PathVariable Long questionId,@PathVariable int limit) throws NoSuchFieldException, IllegalAccessException {
+        List<RecommendViewBean> orderAnswerViewBean = answerService.getOrderAnswerViewBean(questionId, limit);
+        return new SimpleDto(true,null,orderAnswerViewBean);
     }
 }

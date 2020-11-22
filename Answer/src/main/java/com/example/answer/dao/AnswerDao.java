@@ -25,4 +25,5 @@ public interface AnswerDao {
     void updateAnswerCommentSum(Long answerId);
     void incrementSupportSum(Long answerId);
     void decrementSupportSum(Long answerId);
+    Answer queryFullAnswerById(Long answerId);
 }
