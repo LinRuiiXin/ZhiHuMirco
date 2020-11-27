@@ -25,4 +25,5 @@ public interface AnswerService {
     void supportAnswer(Long answerId,Long userId);
     void unSupportAnswer(Long answerId,Long userId);
     List<RecommendViewBean> getOrderAnswerViewBean(Long questionId,int limit) throws NoSuchFieldException, IllegalAccessException;
+    List<RecommendViewBean> getViewBeanBatch(List<Long> ids);
 }

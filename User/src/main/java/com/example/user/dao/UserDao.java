@@ -1,8 +1,11 @@
 package com.example.user.dao;
 
 import com.example.basic.po.User;
+import com.example.basic.vo.UserAttention;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface UserDao {
@@ -17,4 +20,7 @@ public interface UserDao {
     void updateUserPassword(@Param("id") Long id,@Param("password") String password);
     String queryPasswordById(Long id);
     Integer whetherTheUserIsFollowed(Long beAttentionUserId,Long userId);
+    List<UserAttention> getUserAttentions(Long userId);
+    List<Integer> getUserVersionBatch(@Param("ids") List<Long> ids);
+    void incrementVersion(Long id);
 }

@@ -151,12 +151,12 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void incrementSubscribeSum(Long questionId) {
-
+        questionDao.incrementSubscribeSum(questionId);
     }
 
     @Override
     public void decrementSubscribeSum(Long questionId) {
-
+        questionDao.decrementSubscribeSum(questionId);
     }
 
     private String getQuestionDescribe(Long questionId) {

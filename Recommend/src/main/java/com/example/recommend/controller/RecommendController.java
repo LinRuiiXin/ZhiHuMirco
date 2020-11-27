@@ -1,15 +1,15 @@
 package com.example.recommend.controller;
 
 import com.example.basic.dto.SimpleDto;
+import com.example.basic.po.Information;
 import com.example.basic.vo.RecommendViewBean;
 import com.example.recommend.service.interfaces.RecommendService;
+import com.example.recommend.service.rpc.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * TODO
@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/Recommend")
 public class RecommendController {
+
     private final RecommendService recommendService;
 
     @Autowired
@@ -31,5 +32,10 @@ public class RecommendController {
     public SimpleDto getIndexRecommend(@PathVariable Long userId){
         List<RecommendViewBean> indexRecommend = recommendService.getIndexRecommend(userId);
         return new SimpleDto(true,null,indexRecommend);
+    }
+
+    @PostMapping("/InformationViewBean")
+    public SimpleDto getInformationViewBean(@RequestBody List<Information> information) throws InterruptedException, ExecutionException, IllegalAccessException, NoSuchFieldException {
+        return new SimpleDto(true,null,recommendService.getInformationViewBean(information));
     }
 }

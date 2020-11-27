@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Article" />
         <module name="ZhiHuMirco" />
         <module name="User" />
         <module name="ZhiHuMicro-Basic" />
@@ -15,7 +16,7 @@
         <module name="Question" />
         <module name="Comment" />
         <module name="EurekaServer" />
-        <module name="Article" />
+        <module name="Search" />
         <module name="Upload" />
         <module name="Recommend" />
       </profile>
@@ -34,6 +35,7 @@
       <module name="Gateway" options="-parameters" />
       <module name="Question" options="-parameters" />
       <module name="Recommend" options="-parameters" />
+      <module name="Search" options="-parameters" />
       <module name="Upload" options="-parameters" />
       <module name="User" options="-parameters" />
       <module name="ZhiHuMirco" options="-parameters" />

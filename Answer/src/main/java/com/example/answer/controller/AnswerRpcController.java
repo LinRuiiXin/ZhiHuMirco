@@ -2,9 +2,11 @@ package com.example.answer.controller;
 
 import com.example.answer.service.interfaces.AnswerService;
 import com.example.basic.po.Answer;
+import com.example.basic.vo.RecommendViewBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,5 +46,15 @@ public class AnswerRpcController {
     @GetMapping("/RandomAnswer/{sum}")
     public List<Answer> getRandomAnswer(@PathVariable int sum){
         return answerService.getRandomAnswer(sum);
+    }
+
+    @GetMapping("/AnswerViewBeanBatch/{ids}")
+    public List<RecommendViewBean> getViewBeanBatch(@PathVariable("ids") String ids){
+        String[] split = ids.split("-");
+        List<Long> idList = new ArrayList<>(split.length);
+        for (String s : split) {
+            idList.add(Long.valueOf(s));
+        }
+        return answerService.getViewBeanBatch(idList);
     }
 }

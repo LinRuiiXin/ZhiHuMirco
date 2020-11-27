@@ -36,4 +36,26 @@
     <select id="whetherTheUserIsFollowed" resultType="java.lang.Integer">
         select 1 from attention where userId = #{userId} and beAttentionUserId = #{beAttentionUserId} limit 1
     </select>
+
+    <select id="getUserAttentions" resultMap="userAttention">
+        select a.userId,a.beAttentionUserId,u.version from user as u,attention as a
+        where u.id = a.userId and a.userId = #{id}
+    </select>
+
+    <select id="getUserVersionBatch" resultType="java.lang.Integer" parameterType="java.util.List">
+        select version from user
+        where id in 
+        <foreach collection="list" item="id" open="(" close=")" separator="," >
+            #{id}
+        </foreach>
+    </select>
+
+    <update id="incrementVersion">
+        update user set version = version + 1 where id = #{id}
+    </update>
+    <resultMap id="userAttention" type="com.example.basic.vo.UserAttention">
+        <result property="userId" column="userId"/>
+        <result property="beAttentionUserId" column="beAttentionUserId"/>
+        <result property="version" column="version"/>
+    </resultMap>
 </mapper>

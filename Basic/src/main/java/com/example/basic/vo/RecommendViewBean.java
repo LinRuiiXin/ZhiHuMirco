@@ -1,5 +1,7 @@
 package com.example.basic.vo;
 
+import java.util.Date;
+
 public class RecommendViewBean {
     private Long contentId;//内容id，用contentType区分文章、回答
     private Long questionId;//问题id，回答有，文章没有
@@ -14,6 +16,7 @@ public class RecommendViewBean {
     private String thumbnail;
     private Long supportSum;//点赞数
     private Long commentSum;//评论数
+    private Date date;
 
     public RecommendViewBean() {
     }
@@ -137,6 +140,14 @@ public class RecommendViewBean {
         this.commentSum = commentSum;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     public RecommendViewBean contentId(Long contentId){
         this.contentId = contentId;
         return this;
@@ -190,6 +201,10 @@ public class RecommendViewBean {
         return this;
     }
 
+    public RecommendViewBean date(Date date){
+        this.date = date;
+        return this;
+    }
 
     @Override
     public String toString() {

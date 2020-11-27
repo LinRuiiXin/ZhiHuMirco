@@ -6,10 +6,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -37,7 +34,7 @@ public class UserRpcController {
     @GetMapping("/Batch/{ids}")
     public List<User> getUserBatch(@PathVariable String ids){
         String[] split = ids.split("-");
-        List<User> users = new ArrayList<>();
+        List<User> users = new ArrayList<>(split.length);
         for(String str : split){
             users.add(userService.getUserById(Long.valueOf(str)));
         }
@@ -48,6 +45,11 @@ public class UserRpcController {
     @GetMapping("/IsAttention/{beAttentionUserId}/{userId}")
     public boolean whetherTheUserIsFollowed(@ApiParam("被关注用户Id")@PathVariable Long beAttentionUserId,@ApiParam("用户Id")@PathVariable Long userId){
         return userService.whetherTheUserIsFollowed(beAttentionUserId,userId);
+    }
+
+    @PutMapping("/Version/{id}")
+    public void incrementVersion(@PathVariable Long id){
+        userService.incrementVersion(id);
     }
 }
 

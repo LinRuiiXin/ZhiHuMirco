@@ -2,6 +2,8 @@ package com.example.basic.po;
 
 import org.apache.ibatis.type.Alias;
 
+import java.util.Date;
+
 @Alias("article")
 public class Article {
     private Long id;
@@ -12,6 +14,7 @@ public class Article {
     private Integer contentType;
     private Long supportSum;
     private Long commentSum;
+    private Date time;
 
     public Article(){}
 
@@ -22,6 +25,8 @@ public class Article {
         this.thumbnail = thumbnail;
         this.contentType = contentType;
     }
+
+
 
     public Long getId() {
         return id;
@@ -87,6 +92,14 @@ public class Article {
         this.commentSum = commentSum;
     }
 
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
     @Override
     public String toString() {
         return "Article{" +
@@ -98,6 +111,7 @@ public class Article {
                 ", contentType=" + contentType +
                 ", supportSum=" + supportSum +
                 ", commentSum=" + commentSum +
+                ", time=" + time +
                 '}';
     }
 }

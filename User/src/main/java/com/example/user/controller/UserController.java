@@ -1,9 +1,12 @@
 package com.example.user.controller;
 
 import com.example.basic.dto.SimpleDto;
+import com.example.basic.po.Information;
 import com.example.basic.po.User;
 import com.example.basic.status.ChangePassword;
 import com.example.basic.util.FileUtils;
+import com.example.basic.vo.NewInformationVo;
+import com.example.basic.vo.UserAttention;
 import com.example.user.service.AsyncService;
 import com.example.user.service.interfaces.UserService;
 import com.example.user.util.FileUtil;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.validation.Valid;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -199,11 +203,36 @@ public class UserController {
         }
     }
 
+    @GetMapping("/Batch/{ids}")
+    public SimpleDto getUserBatch(@PathVariable String ids){
+        String[] split = ids.split("-");
+        List<User> users = new ArrayList<>(split.length);
+        for(String str : split){
+            users.add(userService.getUserById(Long.valueOf(str)));
+        }
+        return new SimpleDto(true,null,users);
+    }
+
+    /*
+    * 获取用户的关注列表与版本号
+    * */
+    @GetMapping("/AttentionList/{userId}")
+    public SimpleDto getUserAttentionList(@PathVariable Long userId){
+        List<UserAttention> userAttentions = userService.getUserAttentions(userId);
+        return new SimpleDto(true,null,userAttentions);
+    }
+
+    @PostMapping("/NewInformation")
+    public SimpleDto getAttentionUsersNewInformation(@RequestBody List<UserAttention> userAttentions){
+        NewInformationVo attentionUserNewInformation = userService.getAttentionUserNewInformation(userAttentions);
+        return new SimpleDto(true,null,attentionUserNewInformation);
+    }
+
     //为该控制器添加校验器
-    @InitBinder
+/*    @InitBinder
     public void initBinder(WebDataBinder binder){
         binder.setValidator(new UserValidator());
-    }
+    }*/
 
 
 }

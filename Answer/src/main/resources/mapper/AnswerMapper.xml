@@ -64,4 +64,10 @@
     <update id="decrementSupportSum">
         update answer set supportSum = supportSum - 1 where id = #{answerId}
     </update>
+    <select id="getAnswerBatch" parameterType="java.util.List" resultType="answer">
+        select * from answer where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

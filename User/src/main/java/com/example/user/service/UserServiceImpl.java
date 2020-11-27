@@ -1,13 +1,22 @@
 package com.example.user.service;
 
+import com.example.basic.po.Information;
 import com.example.basic.po.User;
 import com.example.basic.status.ChangePassword;
+import com.example.basic.vo.NewInformationVo;
+import com.example.basic.vo.UserAttention;
 import com.example.user.dao.UserDao;
+import com.example.user.service.interfaces.NewPushInformationService;
 import com.example.user.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.example.basic.status.ChangePassword.SUCCESS;
 import static com.example.basic.status.ChangePassword.WRONG_PASSWORD;
@@ -16,10 +25,12 @@ import static com.example.basic.status.ChangePassword.WRONG_PASSWORD;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
+    private final NewPushInformationService newPushInformationService;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao){
+    public UserServiceImpl(UserDao userDao, NewPushInformationService newPushInformationService){
         this.userDao = userDao;
+        this.newPushInformationService = newPushInformationService;
     }
 
     @Override
@@ -101,6 +112,58 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean whetherTheUserIsFollowed(Long beAttentionUserId, Long userId) {
         return userDao.whetherTheUserIsFollowed(beAttentionUserId,userId) != null;
+    }
+
+    /*
+    * 获取用户的关注列表以及对应用户的版本号
+    * */
+    @Override
+    public List<UserAttention> getUserAttentions(Long userId) {
+        return userDao.getUserAttentions(userId);
+    }
+
+    /*
+    * 根据用户传来的关注列表与被关注用户的版本号，与最新的版本号比对，如果用户的版本号低于被订阅用户的最新版本号，那么将获取新的数据(文章，回答等)
+    *
+    * */
+    @Override
+    public NewInformationVo getAttentionUserNewInformation(List<UserAttention> userAttentions) {
+        if(userAttentions.size() > 0){
+            List<Integer> newVersionBatch = userDao.getUserVersionBatch(getAttentionUserIds(userAttentions));
+            Map<Long,Integer> paramForUpdate = compareVersion(userAttentions,newVersionBatch);
+            if(paramForUpdate.size() > 0){
+                List<Information> newInformation = newPushInformationService.getNewInformation(paramForUpdate);
+                return new NewInformationVo(newVersionBatch,newInformation);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void incrementVersion(Long id) {
+        userDao.incrementVersion(id);
+    }
+
+    /*
+    * 比较版本信息，将有跟新内容的用户Id与更新数统计出来。
+    * */
+    private Map<Long, Integer> compareVersion(List<UserAttention> userAttentions, List<Integer> newVersionBatch) {
+        Map<Long,Integer> res = new HashMap<>();
+        for (int i = 0; i < userAttentions.size(); i++) {
+            UserAttention userAttention = userAttentions.get(i);
+            int oldVersion = userAttention.getVersion();
+            int newVersion = newVersionBatch.get(i);
+            if(newVersion > oldVersion){
+                res.put(userAttention.getBeAttentionUserId(),newVersion - oldVersion);
+            }
+        }
+        return res;
+    }
+
+    private List<Long> getAttentionUserIds(List<UserAttention> userAttentions) {
+        List<Long> res = new ArrayList<>(userAttentions.size());
+        userAttentions.forEach(userAttention -> res.add(userAttention.getBeAttentionUserId()));
+        return res;
     }
 
 }

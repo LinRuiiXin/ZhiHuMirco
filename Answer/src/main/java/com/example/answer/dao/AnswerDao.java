@@ -26,4 +26,5 @@ public interface AnswerDao {
     void incrementSupportSum(Long answerId);
     void decrementSupportSum(Long answerId);
     Answer queryFullAnswerById(Long answerId);
+    List<Answer> getAnswerBatch(List<Long> ids);
 }

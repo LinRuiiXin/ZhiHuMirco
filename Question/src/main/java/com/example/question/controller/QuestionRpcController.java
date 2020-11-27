@@ -34,4 +34,8 @@ public class QuestionRpcController {
     public List<RecommendViewBean> recommendAnswer(@PathVariable Long userId){
         return questionService.recommendQuestion(userId);
     }
+    @GetMapping("/Title/{id}")
+    public String getQuestionTitle(@PathVariable Long id){
+        return questionService.getQuestionTitle(id);
+    }
 }

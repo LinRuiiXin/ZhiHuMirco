@@ -2,7 +2,9 @@ package com.example.answer.service;
 
 import com.example.answer.dao.AnswerDao;
 import com.example.answer.dao.AnswerSupportDao;
+import com.example.answer.dao.InformationDao;
 import com.example.answer.service.interfaces.AnswerService;
+import com.example.answer.service.rpc.QuestionService;
 import com.example.answer.service.rpc.UserService;
 import com.example.basic.dto.SimpleDto;
 import com.example.basic.po.Answer;
@@ -40,18 +42,22 @@ public class AnswerServiceImpl implements AnswerService {
     private final Map<Long,Object> locks;
 
     private final RedisTemplate redisTemplate;
+    private final InformationDao informationDao;
     private final AnswerDao answerDao;
     private final AnswerSupportDao answerSupportDao;
     private final ExecutorService executorService;
+    private final QuestionService questionService;
 
     @Autowired
-    public AnswerServiceImpl(AnswerDao answerDao, ExecutorService executorService, UserService userService, RedisTemplate redisTemplate, AnswerSupportDao answerSupportDao){
+    public AnswerServiceImpl(AnswerDao answerDao, ExecutorService executorService, UserService userService, RedisTemplate redisTemplate, AnswerSupportDao answerSupportDao, QuestionService questionService, InformationDao informationDao){
         locks = new ConcurrentHashMap<>();
         this.answerDao = answerDao;
         this.executorService = executorService;
         this.userService = userService;
         this.redisTemplate = redisTemplate;
         this.answerSupportDao = answerSupportDao;
+        this.questionService = questionService;
+        this.informationDao = informationDao;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -59,11 +65,14 @@ public class AnswerServiceImpl implements AnswerService {
     public SimpleDto insertAnswer(MultipartFile file, Answer answer) {
         try {
             answerDao.insertAnswer(answer);
+            informationDao.insertInformation(answer.getId(),answer.getUserId());
+            userService.incrementVersion(answer.getUserId());
             File newFile = new File("/Users/linruixin/Desktop/upload/ZhiHu/Answer/" + answer.getId() + ".txt");
             file.transferTo(newFile);
             updateAnswerOrder(answer.getQuestionId());
             return new SimpleDto(true,null,null);
         }catch (Exception e){
+            e.printStackTrace();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new SimpleDto(false,"IO异常",null);
         }
@@ -329,15 +338,31 @@ public class AnswerServiceImpl implements AnswerService {
             for (int i = 0; i < answerIds.size(); i++) {
                 Answer answer = answers.get(i);
                 User user = users.get(i);
-                RecommendViewBean recommendViewBean = convertRecommendViewBean(answer,user);
+                RecommendViewBean recommendViewBean = convertRecommendViewBean(answer,user,false);
                 res.add(recommendViewBean);
             }
         }
         return res;
     }
 
-    private RecommendViewBean convertRecommendViewBean(Answer answer, User user) {
-        return new RecommendViewBean()
+    @Override
+    public List<RecommendViewBean> getViewBeanBatch(List<Long> ids) {
+        List<Answer> answerBatch = answerDao.getAnswerBatch(ids);
+        List<User> users = userService.getUserBatch(StringUtils.jointString('-', answerBatch, "userId"));
+        List<RecommendViewBean> recommendViewBeans = convertRecommendViewBean(answerBatch, users, true);
+        return recommendViewBeans;
+    }
+
+    private List<RecommendViewBean> convertRecommendViewBean(List<Answer> answers,List<User> users,boolean needTitle){
+        List<RecommendViewBean> res = new ArrayList<>(answers.size());
+        for (int i = 0; i < answers.size(); i++) {
+            res.add(convertRecommendViewBean(answers.get(i),users.get(i),needTitle));
+        }
+        return res;
+    }
+
+    private RecommendViewBean convertRecommendViewBean(Answer answer, User user,boolean needTitle) {
+        return  new RecommendViewBean()
                 .contentId(answer.getId())
                 .questionId(answer.getQuestionId())
                 .userId(answer.getUserId())
@@ -346,10 +371,12 @@ public class AnswerServiceImpl implements AnswerService {
                 .username(user.getUserName())
                 .portraitFileName(user.getPortraitFileName())
                 .introduction(user.getProfile())
+                .title(needTitle ? questionService.getQuestionTitle(answer.getQuestionId()) : null)
                 .content(answer.getContent())
                 .thumbnail(answer.getThumbnail())
                 .supportSum(answer.getSupportSum())
-                .commentSum(answer.getCommentSum());
+                .commentSum(answer.getCommentSum())
+                .date(answer.getTime());
     }
 
     private List<Answer> getAnswerBatch(List<Long> answerIds) {

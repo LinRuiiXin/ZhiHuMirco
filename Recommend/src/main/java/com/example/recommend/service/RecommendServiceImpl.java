@@ -1,11 +1,20 @@
 package com.example.recommend.service;
 
+import com.example.basic.po.Information;
+import com.example.basic.po.User;
+import com.example.basic.util.StringUtils;
 import com.example.basic.vo.RecommendViewBean;
 import com.example.recommend.service.interfaces.RecommendService;
 import com.example.recommend.service.rpc.*;
+import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * TODO
@@ -17,10 +26,18 @@ import java.util.List;
 public class RecommendServiceImpl implements RecommendService {
 
     private final QuestionService questionService;
+    private final ExecutorService executorService;
+    private final UserService userService;
+    private final AnswerService answerService;
+    private final ArticleService articleService;
 
     @Autowired
-    public RecommendServiceImpl(QuestionService questionService) {
+    public RecommendServiceImpl(QuestionService questionService,UserService userService,ExecutorService executorService,AnswerService answerService,ArticleService articleService) {
         this.questionService = questionService;
+        this.userService = userService;
+        this.executorService = executorService;
+        this.answerService = answerService;
+        this.articleService = articleService;
     }
 
     /*
@@ -33,6 +50,49 @@ public class RecommendServiceImpl implements RecommendService {
         return recommendViewBeans;
     }
 
+    @Override
+    public List<RecommendViewBean> getInformationViewBean(List<Information> information) throws ExecutionException, InterruptedException {
+        String answerIds = getInformationAnswerIds(information);
+        String articleIds = getInformationArticleIds(information);
+        Future<List<RecommendViewBean>> answerFuture = executorService.submit(() -> answerService.getViewBeanBatch(answerIds));
+        Future<List<RecommendViewBean>> articleFuture = executorService.submit(() -> articleService.getViewBeanBatch(articleIds));
+        List<RecommendViewBean> answerViewBeans = answerFuture.get();
+        List<RecommendViewBean> articleViewBeans = articleFuture.get();
+        answerViewBeans.addAll(articleViewBeans);
+        return answerViewBeans;
+    }
+
+
+    private String getInformationAnswerIds(List<Information> information) {
+        List<Long> informationContentIds = getInformationContentIds(1, information);
+        return joinList(informationContentIds);
+    }
+
+    private String getInformationArticleIds(List<Information> information) {
+        List<Long> informationContentIds = getInformationContentIds(2, information);
+        return joinList(informationContentIds);
+    }
+
+    private String joinList(List<Long> longs){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < longs.size(); i++) {
+            stringBuilder.append(longs.get(i));
+            if(i != longs.size()-1){
+                stringBuilder.append('-');
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private List<Long> getInformationContentIds(int type,List<Information> information){
+        List<Long> ids = new ArrayList<>();
+        information.forEach(info -> {
+            if(info.getType() == type){
+                ids.add(info.getContentId());
+            }
+        });
+        return ids;
+    }
 
 
 }

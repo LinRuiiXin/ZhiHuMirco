@@ -4,8 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.article.dao.ArticleDao">
     <insert id="addArticle" parameterType="article" keyProperty="id" useGeneratedKeys="true">
-        insert into article(authorId,title,content,thumbnail,contentType,supportSum,commentSum)
-        values (#{authorId},#{title},#{content},#{thumbnail},#{contentType},0,0)
+        insert into article(authorId,title,content,thumbnail,contentType,supportSum,commentSum,time)
+        values (#{authorId},#{title},#{content},#{thumbnail},#{contentType},0,0,now())
     </insert>
     <select id="getArticleById" resultType="article">
         select * from article where id = #{id};
@@ -25,4 +25,11 @@
     <update id="decrementCommentSum">
         update article set commentSum = commentSum - 1 where id = #{articleId}
     </update>
+    <select id="getArticleBatchById" parameterType="java.util.List" resultType="article">
+        select * from article
+        where id in
+        <foreach collection="list" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

@@ -2,6 +2,9 @@ package com.example.article.service.interfaces;
 
 import com.example.basic.po.Article;
 import com.example.basic.vo.ArticleVo;
+import com.example.basic.vo.RecommendViewBean;
+
+import java.util.List;
 
 public interface ArticleService {
     /*
@@ -14,4 +17,6 @@ public interface ArticleService {
     void decrementSupportSum(Long articleId);
     void incrementCommentSum(Long articleId);
     void decrementCommentSum(Long articleId);
+    RecommendViewBean getViewBean(Long id);
+    List<RecommendViewBean> getViewBeanBatch(List<Long> ids);
 }

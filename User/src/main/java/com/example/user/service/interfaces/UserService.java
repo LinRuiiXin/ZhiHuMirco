@@ -3,6 +3,10 @@ package com.example.user.service.interfaces;
 
 import com.example.basic.po.User;
 import com.example.basic.status.ChangePassword;
+import com.example.basic.vo.NewInformationVo;
+import com.example.basic.vo.UserAttention;
+
+import java.util.List;
 
 public interface UserService {
     boolean mailHasRegistered(String mail);
@@ -25,4 +29,9 @@ public interface UserService {
 
     boolean whetherTheUserIsFollowed(Long beAttentionUserId,Long userId);
 
+    List<UserAttention> getUserAttentions(Long userId);
+
+    NewInformationVo getAttentionUserNewInformation(List<UserAttention> userAttentions);
+
+    void incrementVersion(Long id);
 }
