@@ -223,4 +223,21 @@ public class Information {
     public void setPortraitFileName(String portraitFileName) {
         this.portraitFileName = portraitFileName;
     }
+
+    @Override
+    public String toString() {
+        return "Information{" +
+                "contentType=" + contentType +
+                ", questionId=" + questionId +
+                ", type=" + type +
+                ", contentId=" + contentId +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", authorId=" + authorId +
+                ", authorName='" + authorName + '\'' +
+                ", profile='" + profile + '\'' +
+                ", portraitFileName='" + portraitFileName + '\'' +
+                '}';
+    }
 }

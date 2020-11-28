@@ -5,4 +5,7 @@
     <select id="getAllQuestion" resultType="java.lang.String">
         select name from question
     </select>
+    <select id="getQuestionTitle" resultType="java.lang.String">
+        select name from question where id = #{id}
+    </select>
 </mapper>

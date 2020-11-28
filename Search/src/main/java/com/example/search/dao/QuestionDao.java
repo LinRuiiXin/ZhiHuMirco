@@ -1,5 +1,6 @@
 package com.example.search.dao;
 
+import com.example.basic.po.Article;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,4 +14,5 @@ import java.util.List;
 @Repository
 public interface QuestionDao {
     List<String> getAllQuestion();
+    String getQuestionTitle(Long id);
 }

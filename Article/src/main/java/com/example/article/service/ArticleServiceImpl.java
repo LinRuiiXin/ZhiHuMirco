@@ -4,12 +4,14 @@ import com.example.article.dao.ArticleDao;
 import com.example.article.dao.InformationDao;
 import com.example.article.service.interfaces.ArticleService;
 import com.example.article.service.interfaces.ArticleSupportService;
+import com.example.article.service.rpc.SearchService;
 import com.example.article.service.rpc.UserService;
 import com.example.basic.po.Article;
 import com.example.basic.po.User;
 import com.example.basic.util.StringUtils;
 import com.example.basic.vo.ArticleVo;
 import com.example.basic.vo.RecommendViewBean;
+import com.example.search.document.Information;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,21 +41,30 @@ public class ArticleServiceImpl implements ArticleService {
     private final ArticleDao articleDao;
     private final ExecutorService executorService;
     private final UserService userService;
+    private final SearchService searchService;
 
     @Autowired
-    public ArticleServiceImpl(ArticleDao articleDao, ExecutorService executorService, UserService userService, InformationDao informationDao) {
+    public ArticleServiceImpl(ArticleDao articleDao, ExecutorService executorService, UserService userService, InformationDao informationDao, SearchService searchService) {
         this.articleDao = articleDao;
         this.executorService = executorService;
         this.userService = userService;
         this.informationDao = informationDao;
+        this.searchService = searchService;
     }
 
     @Override
     public void addArticle(Article article) {
+        //保留文章原文(纯文本)
+        String articleOriginal = article.getContent();
+        //截取文章的一部分内容
+        article.setContent(splitArticleOriginal(articleOriginal));
         articleDao.addArticle(article);
         informationDao.insertInformation(article.getId(),article.getAuthorId());
         userService.incrementVersion(article.getAuthorId());
+        article.setContent(articleOriginal);
+        searchService.insertInformation(convertArticleToInformation(article,userService.getUserById(article.getAuthorId())));
     }
+
 
     /*
      * 获取文章
@@ -105,6 +116,9 @@ public class ArticleServiceImpl implements ArticleService {
         articleDao.decrementCommentSum(articleId);
     }
 
+    /*
+    * 根据Id获取文章ViewBean
+    * */
     @Override
     public RecommendViewBean getViewBean(Long id) {
         Article article = articleDao.getArticleById(id);
@@ -113,6 +127,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
 
+    /*
+    * 批量获取文章的ViewBean
+    * */
     @Override
     public List<RecommendViewBean> getViewBeanBatch(List<Long> ids) {
         List<Article> articleBatchById = articleDao.getArticleBatchById(ids);
@@ -121,7 +138,12 @@ public class ArticleServiceImpl implements ArticleService {
         return recommendViewBeans;
     }
 
-
+    /*
+     * 截取文章纯文本内容 若大于50字，则截取文章前50个字
+     * */
+    private String splitArticleOriginal(String articleOriginal) {
+        return articleOriginal.length() > 50 ? articleOriginal.substring(0,50) : articleOriginal;
+    }
 
     /*
      * 根据文章Id获取具体内容
@@ -151,6 +173,20 @@ public class ArticleServiceImpl implements ArticleService {
             res.add(convertArticle(articles.get(i),users.get(i)));
         }
         return res;
+    }
+
+    private Information convertArticleToInformation(Article article,User user) {
+        return new Information()
+                .contentType(2)
+                .type(article.getContentType())
+                .contentId(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .thumbnail(article.getThumbnail())
+                .authorId(article.getAuthorId())
+                .authorName(user.getUserName())
+                .profile(user.getProfile())
+                .portraitFileName(user.getPortraitFileName());
     }
 
     private RecommendViewBean convertArticle(Article article, User user) {

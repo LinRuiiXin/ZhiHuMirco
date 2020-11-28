@@ -7,17 +7,17 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Article" />
+        <module name="Search" />
         <module name="ZhiHuMirco" />
         <module name="User" />
         <module name="ZhiHuMicro-Basic" />
-        <module name="Answer" />
         <module name="Basic" />
         <module name="Gateway" />
         <module name="Question" />
-        <module name="Comment" />
-        <module name="EurekaServer" />
-        <module name="Search" />
         <module name="Upload" />
+        <module name="EurekaServer" />
+        <module name="Answer" />
+        <module name="Comment" />
         <module name="Recommend" />
       </profile>
     </annotationProcessing>

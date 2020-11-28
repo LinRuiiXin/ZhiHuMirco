@@ -5,6 +5,7 @@ import com.example.answer.dao.AnswerSupportDao;
 import com.example.answer.dao.InformationDao;
 import com.example.answer.service.interfaces.AnswerService;
 import com.example.answer.service.rpc.QuestionService;
+import com.example.answer.service.rpc.SearchService;
 import com.example.answer.service.rpc.UserService;
 import com.example.basic.dto.SimpleDto;
 import com.example.basic.po.Answer;
@@ -12,6 +13,7 @@ import com.example.basic.po.User;
 import com.example.basic.util.StringUtils;
 import com.example.basic.vo.AnswerVo;
 import com.example.basic.vo.RecommendViewBean;
+import com.example.search.document.Information;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -47,9 +49,11 @@ public class AnswerServiceImpl implements AnswerService {
     private final AnswerSupportDao answerSupportDao;
     private final ExecutorService executorService;
     private final QuestionService questionService;
+    private final SearchService searchService;
 
     @Autowired
-    public AnswerServiceImpl(AnswerDao answerDao, ExecutorService executorService, UserService userService, RedisTemplate redisTemplate, AnswerSupportDao answerSupportDao, QuestionService questionService, InformationDao informationDao){
+    public AnswerServiceImpl(AnswerDao answerDao, ExecutorService executorService, UserService userService, RedisTemplate redisTemplate, AnswerSupportDao answerSupportDao, QuestionService questionService, InformationDao informationDao, SearchService searchService){
+        this.searchService = searchService;
         locks = new ConcurrentHashMap<>();
         this.answerDao = answerDao;
         this.executorService = executorService;
@@ -64,9 +68,13 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public SimpleDto insertAnswer(MultipartFile file, Answer answer) {
         try {
+            String originalContent = answer.getContent();
+            answer.setContent(originalContent.length() > 50 ? originalContent.substring(0,50) : originalContent);
             answerDao.insertAnswer(answer);
             informationDao.insertInformation(answer.getId(),answer.getUserId());
             userService.incrementVersion(answer.getUserId());
+            answer.setContent(originalContent);
+            searchService.insertInformation(convertAnswerToInformation(answer));
             File newFile = new File("/Users/linruixin/Desktop/upload/ZhiHu/Answer/" + answer.getId() + ".txt");
             file.transferTo(newFile);
             updateAnswerOrder(answer.getQuestionId());
@@ -77,6 +85,7 @@ public class AnswerServiceImpl implements AnswerService {
             return new SimpleDto(false,"IO异常",null);
         }
     }
+
 
     @Override
     public Answer queryRandomAnswerByQuestionId(Long questionId) {
@@ -377,6 +386,23 @@ public class AnswerServiceImpl implements AnswerService {
                 .supportSum(answer.getSupportSum())
                 .commentSum(answer.getCommentSum())
                 .date(answer.getTime());
+    }
+
+    private Information convertAnswerToInformation(Answer answer) {
+        User userById = userService.getUserById(answer.getUserId());
+        String title = questionService.getQuestionTitle(answer.getQuestionId());
+        return new Information()
+                .contentType(1)
+                .questionId(answer.getQuestionId())
+                .type(answer.getContentType())
+                .contentId(answer.getId())
+                .title(title)
+                .content(answer.getContent())
+                .thumbnail(answer.getThumbnail())
+                .authorId(answer.getUserId())
+                .authorName(userById.getUserName())
+                .profile(userById.getProfile())
+                .portraitFileName(userById.getPortraitFileName());
     }
 
     private List<Answer> getAnswerBatch(List<Long> answerIds) {

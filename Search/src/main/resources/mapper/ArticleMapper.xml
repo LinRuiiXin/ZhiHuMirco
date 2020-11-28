@@ -5,4 +5,7 @@
     <select id="getAllArticleTitle" resultType="java.lang.String">
         select title from article
     </select>
+    <select id="getAllArticle" resultType="article">
+        select * from article
+    </select>
 </mapper>
