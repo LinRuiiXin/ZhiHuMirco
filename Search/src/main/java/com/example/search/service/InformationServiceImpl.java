@@ -15,9 +15,15 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.InnerHitBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.collapse.CollapseBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -82,6 +88,64 @@ public class InformationServiceImpl implements InformationService {
         try {
             SearchRequest searchRequest = new SearchRequest(indexInformation);
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).from(limit).size(size);
+            searchRequest.source(searchSourceBuilder);
+            SearchResponse search = client.search(searchRequest, options);
+            return getInformationFromResponse(search);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Information> comprehensive(String key, int from, int size) {
+        try {
+            SearchRequest searchRequest = new SearchRequest(indexInformation);
+            MatchQueryBuilder queryBuilder = QueryBuilders.matchQuery("title", key);
+            CollapseBuilder collapseBuilder = new CollapseBuilder("questionId");
+            InnerHitBuilder innerHitBuilder = new InnerHitBuilder()
+                    .setName("test")
+                    .setSize(size)
+                    .setTrackScores(true)
+                    .setIgnoreUnmapped(true);
+            collapseBuilder.setInnerHits(innerHitBuilder);
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder().query(queryBuilder).from(from).size(size).collapse(collapseBuilder);
+            searchRequest.source(searchSourceBuilder);
+            SearchResponse search = client.search(searchRequest, options);
+            return getInformationFromResponse(search);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Information> question(String key, int from, int size) {
+        try {
+            SearchRequest searchRequest = new SearchRequest(indexInformation);
+            BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("title", key)).must(QueryBuilders.termQuery("contentType", String.valueOf(1)));
+            CollapseBuilder collapseBuilder = new CollapseBuilder("questionId");
+            InnerHitBuilder innerHitBuilder = new InnerHitBuilder()
+                    .setName("test")
+                    .setSize(0)
+                    .setTrackScores(true)
+                    .setIgnoreUnmapped(true);
+            collapseBuilder.setInnerHits(innerHitBuilder);
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder().query(queryBuilder).from(from).size(size).collapse(collapseBuilder);
+            searchRequest.source(searchSourceBuilder);
+            SearchResponse search = client.search(searchRequest, options);
+            return getInformationFromResponse(search);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Information> article(String key, int from, int size) {
+        try {
+            SearchRequest searchRequest = new SearchRequest(indexInformation);
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder().query(QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("title", key)).must(QueryBuilders.termQuery("contentType", String.valueOf(2)))).from(from).size(size);
             searchRequest.source(searchSourceBuilder);
             SearchResponse search = client.search(searchRequest, options);
             return getInformationFromResponse(search);

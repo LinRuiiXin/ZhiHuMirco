@@ -58,4 +58,24 @@
         <result property="beAttentionUserId" column="beAttentionUserId"/>
         <result property="version" column="version"/>
     </resultMap>
+    <update id="updateUser">
+        update user set userName = #{userName},profile = #{profile}
+        where id = #{id}
+    </update>
+    <update id="incrementUserFollowSum">
+        update user set followSum = followSum + 1
+        where id = #{id}
+    </update>
+    <update id="decrementUserFollowSum">
+        update user set followSum = followSum - 1
+        where id = #{id}
+    </update>
+    <update id="incrementUserFensSum">
+        update user set fensSum = fensSum + 1
+        where id = #{id}
+    </update>
+    <update id="decrementUserFensSum">
+        update user set fensSum = fensSum - 1
+        where id = #{id}
+    </update>
 </mapper>

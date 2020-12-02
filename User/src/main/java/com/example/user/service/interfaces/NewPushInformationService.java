@@ -17,4 +17,6 @@ public interface NewPushInformationService {
     * 获取集合中每个用户指定数量的Information(即更新内容的id)
     * */
     List<Information> getNewInformation(Map<Long, Integer> paramForUpdate);
+
+    List<Information> getUserInformation(Long userId,int from,int size);
 }

@@ -23,4 +23,9 @@ public interface UserDao {
     List<UserAttention> getUserAttentions(Long userId);
     List<Integer> getUserVersionBatch(@Param("ids") List<Long> ids);
     void incrementVersion(Long id);
+    void updateUser(User user);
+    void incrementUserFollowSum(Long id);
+    void decrementUserFollowSum(Long id);
+    void incrementUserFensSum(Long id);
+    void decrementUserFensSum(Long id);
 }

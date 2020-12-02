@@ -1,18 +1,16 @@
 package com.example.user.controller;
 
 import com.example.basic.dto.SimpleDto;
-import com.example.basic.po.Information;
 import com.example.basic.po.User;
 import com.example.basic.status.ChangePassword;
-import com.example.basic.util.FileUtils;
 import com.example.basic.vo.NewInformationVo;
 import com.example.basic.vo.UserAttention;
 import com.example.user.service.AsyncService;
+import com.example.user.service.interfaces.AttentionService;
 import com.example.user.service.interfaces.UserService;
 import com.example.user.util.FileUtil;
 import com.example.user.util.RegexUtil;
 import com.example.user.util.SecurityCodeUtil;
-import com.example.user.validator.UserValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -47,12 +44,14 @@ import static com.example.basic.status.ChangePassword.SUCCESS;
 @RequestMapping("/User")
 public class UserController {
 
+    private final AttentionService attentionService;
     private final UserService userService;
     private final StringRedisTemplate redisTemplate;
     private final AsyncService asyncService;
 
     @Autowired
-    public UserController(UserService userService, StringRedisTemplate redisTemplate, AsyncService asyncService){
+    public UserController(AttentionService attentionService, UserService userService, StringRedisTemplate redisTemplate, AsyncService asyncService){
+        this.attentionService = attentionService;
         this.userService = userService;
         this.redisTemplate = redisTemplate;
         this.asyncService = asyncService;
@@ -134,6 +133,11 @@ public class UserController {
         }
     }
 
+    @PostMapping("/Update")
+    public SimpleDto update(@RequestBody User user){
+        User updatedUser = userService.updateUser(user);
+        return new SimpleDto(true,null,updatedUser);
+    }
 
     @PostMapping("/ChangePassword")
     public SimpleDto changePassword(@RequestParam Long userId,@RequestParam String password,@RequestParam String newPassword){
@@ -226,6 +230,28 @@ public class UserController {
     public SimpleDto getAttentionUsersNewInformation(@RequestBody List<UserAttention> userAttentions){
         NewInformationVo attentionUserNewInformation = userService.getAttentionUserNewInformation(userAttentions);
         return new SimpleDto(true,null,attentionUserNewInformation);
+    }
+
+    @GetMapping("/HomePage/{targetUserId}/{userId}")
+    public SimpleDto getHomePageVo(@PathVariable Long targetUserId,@PathVariable Long userId){
+        return new SimpleDto(true,null,userService.getUserHomePageVo(targetUserId,userId));
+    }
+
+    @GetMapping("/Information/{userId}/{limit}/{size}")
+    public SimpleDto getUserInformation(@PathVariable Long userId,@PathVariable int limit,@PathVariable int size){
+        return new SimpleDto(true,null,userService.getUserInformation(userId,limit,size));
+    }
+
+    @PostMapping("/Follow")
+    public SimpleDto follow(@RequestParam Long targetUserId,@RequestParam Long userId){
+        attentionService.follow(targetUserId,userId);
+        return SimpleDto.SUCCESS();
+    }
+
+    @PostMapping("/UnFollow")
+    public SimpleDto unFollow(@RequestParam Long targetUserId,@RequestParam Long userId){
+        attentionService.unFollow(targetUserId,userId);
+        return SimpleDto.SUCCESS();
     }
 
     //为该控制器添加校验器

@@ -3,12 +3,19 @@ package com.example.user.service;
 import com.example.basic.po.Information;
 import com.example.basic.po.User;
 import com.example.basic.status.ChangePassword;
+import com.example.basic.vo.HomePageVo;
 import com.example.basic.vo.NewInformationVo;
+import com.example.basic.vo.RecommendViewBean;
 import com.example.basic.vo.UserAttention;
+import com.example.search.document.UserDoc;
 import com.example.user.dao.UserDao;
+import com.example.user.service.interfaces.AttentionService;
 import com.example.user.service.interfaces.NewPushInformationService;
 import com.example.user.service.interfaces.UserService;
+import com.example.user.service.rpc.RecommendService;
+import com.example.user.service.rpc.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,36 +30,39 @@ import static com.example.basic.status.ChangePassword.WRONG_PASSWORD;
 
 @Service
 public class UserServiceImpl implements UserService {
+    @Autowired
+    private AttentionService attentionService;
 
     private final UserDao userDao;
     private final NewPushInformationService newPushInformationService;
+    private final SearchService searchService;
+    private final RecommendService recommendService;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, NewPushInformationService newPushInformationService){
+    public UserServiceImpl(UserDao userDao, NewPushInformationService newPushInformationService, SearchService searchService, RecommendService recommendService){
         this.userDao = userDao;
         this.newPushInformationService = newPushInformationService;
+        this.searchService = searchService;
+        this.recommendService = recommendService;
     }
 
     @Override
     public boolean mailHasRegistered(String mail) {
         Long userIdByEmail = userDao.getUserIdByMail(mail);
-        if(userIdByEmail == null){
-            return false;
-        }else{
-            return true;
-        }
+        return userIdByEmail != null;
     }
 
     @Transactional
     @Override
     public User insertUser(User user) {
         userDao.insertUser(user);
+        searchService.insertUserDoc(new UserDoc(user.getId(),user.getUserName(),user.getPortraitFileName(),user.getProfile()));
         return user;
     }
 
     @Override
     public boolean nameHasRegistered(String userName) {
-        return userDao.getUserIdByUserName(userName) == null ? false:true;
+        return userDao.getUserIdByUserName(userName) != null;
     }
 
     @Transactional
@@ -72,9 +82,11 @@ public class UserServiceImpl implements UserService {
         return userDao.getUserIdByPhone(phone) != null;
     }
 
+    @CachePut(cacheNames = "User",key = "#id")
     @Override
-    public void setPortraitFileNameById(Long id, String fileName) {
+    public User setPortraitFileNameById(Long id, String fileName) {
         userDao.setPortraitFileName(id,fileName);
+        return userDao.queryUserById(id);
     }
 
     @Cacheable(cacheNames = "User",key = "#id")
@@ -143,6 +155,41 @@ public class UserServiceImpl implements UserService {
     public void incrementVersion(Long id) {
         userDao.incrementVersion(id);
     }
+
+    @Override
+    public HomePageVo getUserHomePageVo(Long targetUserId, Long userId) {
+        User targetUser = userDao.queryUserById(targetUserId);
+        boolean b = false;
+        if(userId != -1)
+             b = attentionService.userHasAttention(targetUserId, userId);
+        return new HomePageVo(b,targetUser);
+    }
+
+    @Override
+    public List<RecommendViewBean> getUserInformation(Long userId, int from, int size) {
+        List<Information> userInformation = newPushInformationService.getUserInformation(userId, from, size);
+        return recommendService.getUserInformation(userInformation);
+    }
+
+    @CachePut(cacheNames = "User",key = "#result.id")
+    @Override
+    public User updateUser(User user) {
+        userDao.updateUser(user);
+        return user;
+    }
+
+    @Override
+    public void followUser(Long targetUserId, Long userId) {
+        userDao.incrementUserFollowSum(userId);
+        userDao.incrementUserFensSum(targetUserId);
+    }
+
+    @Override
+    public void unFollowUser(Long targetUserId, Long userId) {
+        userDao.decrementUserFollowSum(userId);
+        userDao.decrementUserFensSum(targetUserId);
+    }
+
 
     /*
     * 比较版本信息，将有跟新内容的用户Id与更新数统计出来。

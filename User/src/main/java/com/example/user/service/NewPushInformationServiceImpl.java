@@ -30,9 +30,14 @@ public class NewPushInformationServiceImpl implements NewPushInformationService 
     @Override
     public List<Information> getNewInformation(Map<Long, Integer> paramForUpdate) {
         List<Information> res = new ArrayList<>();
-        paramForUpdate.keySet().forEach(authorId -> {
+        paramForUpdate.keySet() .forEach(authorId -> {
             res.addAll(informationDao.getAuthorNewInformation(authorId,0,paramForUpdate.get(authorId)));
         });
         return res;
+    }
+
+    @Override
+    public List<Information> getUserInformation(Long userId, int from, int size) {
+        return informationDao.getAuthorNewInformation(userId,from,size);
     }
 }

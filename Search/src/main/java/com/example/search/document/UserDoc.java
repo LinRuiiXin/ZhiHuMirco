@@ -6,17 +6,17 @@ package com.example.search.document;
  * @author LinRuiXin
  * @date 2020/11/26 8:08 下午
  */
-public class User {
+public class UserDoc {
     private Long id; //用户Id
-    private String name; //用户名
+    private String userName; //用户名
     private String portraitFileName; //用户头像
     private String profile; //简介
 
-    public User(){}
+    public UserDoc(){}
 
-    public User(Long id, String name, String portraitFileName, String profile) {
+    public UserDoc(Long id, String userName, String portraitFileName, String profile) {
         this.id = id;
-        this.name = name;
+        this.userName = userName;
         this.portraitFileName = portraitFileName;
         this.profile = profile;
     }
@@ -29,12 +29,12 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPortraitFileName() {
@@ -51,5 +51,15 @@ public class User {
 
     public void setProfile(String profile) {
         this.profile = profile;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDoc{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", portraitFileName='" + portraitFileName + '\'' +
+                ", profile='" + profile + '\'' +
+                '}';
     }
 }

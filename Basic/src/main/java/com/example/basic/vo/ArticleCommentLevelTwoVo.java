@@ -1,9 +1,7 @@
 package com.example.basic.vo;
 
-import com.example.basic.po.AnswerCommentLevelTwo;
 import com.example.basic.po.ArticleCommentLevelTwo;
 import com.example.basic.po.User;
-import org.apache.ibatis.type.Alias;
 
 /**
  * TODO

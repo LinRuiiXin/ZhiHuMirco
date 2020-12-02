@@ -9,8 +9,10 @@ import com.example.search.dao.QuestionDao;
 import com.example.search.dao.UserDao;
 import com.example.search.document.Information;
 import com.example.search.document.Keyword;
+import com.example.search.document.UserDoc;
 import com.example.search.service.interfaces.InformationService;
 import com.example.search.service.interfaces.KeywordService;
+import com.example.search.service.interfaces.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,15 +34,17 @@ public class InitZhiHuSearch {
     private final ArticleDao articleDao;
     private final KeywordService keywordService;
     private final InformationService informationService;
+    private final UserService userService;
     private final UserDao userDao;
     private final AnswerDao answerDao;
 
     @Autowired
-    public InitZhiHuSearch(QuestionDao questionDao, KeywordService keywordService, ArticleDao articleDao, InformationService informationService, UserDao userDao, AnswerDao answerDao) {
+    public InitZhiHuSearch(QuestionDao questionDao, KeywordService keywordService, ArticleDao articleDao, InformationService informationService, UserService userService, UserDao userDao, AnswerDao answerDao) {
         this.questionDao = questionDao;
         this.keywordService = keywordService;
         this.articleDao = articleDao;
         this.informationService = informationService;
+        this.userService = userService;
         this.userDao = userDao;
         this.answerDao = answerDao;
     }
@@ -66,8 +70,8 @@ public class InitZhiHuSearch {
     void importAllArticleToInformation(){
         List<Article> allArticle = articleDao.getAllArticle();
         allArticle.forEach(article -> {
-            String articleContent = getArticleForText(article.getId());
-            article.setContent(articleContent);
+            /*String articleContent = getArticleForText(article.getId());
+            article.setContent(articleContent);*/
             User userById = userDao.getUserById(article.getAuthorId());
             informationService.insertInformation(convertArticleToInformation(article,userById));
         });
@@ -87,14 +91,30 @@ public class InitZhiHuSearch {
         });
     }
 
-
-    private String getArticleForText(Long id) {
-        return getHtmlTextFromFile("Article",String.valueOf(id));
+    @Test
+    void importAllUser(){
+        List<UserDoc> allUser = userDao.getAllUser();
+        userService.addUserBatch(allUser);
     }
 
-    private String getAnswerForText(Long id){
-        return getHtmlTextFromFile("Answer",String.valueOf(id));
+    @Test
+    void testUserImport(){
+        List<UserDoc> user = userService.getUser(0, 10);
+        user.forEach(System.out::println);
     }
+
+    @Test
+    void insertSingleUser(){
+        userService.addUser(new UserDoc(1l,"林瑞鑫","158581734675531.png","test"));
+    }
+
+//    private String getArticleForText(Long id) {
+//        return getHtmlTextFromFile("Article",String.valueOf(id));
+//    }
+//
+//    private String getAnswerForText(Long id){
+//        return getHtmlTextFromFile("Answer",String.valueOf(id));
+//    }
 
     private String getHtmlTextFromFile(String dirName,String filename){
         try {
@@ -126,7 +146,8 @@ public class InitZhiHuSearch {
                 .authorId(article.getAuthorId())
                 .authorName(user.getUserName())
                 .profile(user.getProfile())
-                .portraitFileName(user.getPortraitFileName());
+                .portraitFileName(user.getPortraitFileName())
+                .questionId(System.currentTimeMillis());
     }
 
     private Information convertAnswerToInformation(Answer answer) {

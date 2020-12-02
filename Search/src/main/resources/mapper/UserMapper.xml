@@ -5,4 +5,7 @@
     <select id="getUserById" resultType="user" parameterType="java.lang.Long">
         select * from user where id = #{id}
     </select>
+    <select id="getAllUser" resultType="com.example.search.document.UserDoc">
+        select id,username,portraitFileName,profile from user
+    </select>
 </mapper>

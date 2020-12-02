@@ -55,13 +55,13 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public void addArticle(Article article) {
         //保留文章原文(纯文本)
-        String articleOriginal = article.getContent();
+//        String articleOriginal = article.getContent();
         //截取文章的一部分内容
-        article.setContent(splitArticleOriginal(articleOriginal));
+//        article.setContent(splitArticleOriginal(articleOriginal));
         articleDao.addArticle(article);
         informationDao.insertInformation(article.getId(),article.getAuthorId());
         userService.incrementVersion(article.getAuthorId());
-        article.setContent(articleOriginal);
+//        article.setContent(articleOriginal);
         searchService.insertInformation(convertArticleToInformation(article,userService.getUserById(article.getAuthorId())));
     }
 
@@ -178,6 +178,7 @@ public class ArticleServiceImpl implements ArticleService {
     private Information convertArticleToInformation(Article article,User user) {
         return new Information()
                 .contentType(2)
+                .questionId(System.currentTimeMillis())
                 .type(article.getContentType())
                 .contentId(article.getId())
                 .title(article.getTitle())

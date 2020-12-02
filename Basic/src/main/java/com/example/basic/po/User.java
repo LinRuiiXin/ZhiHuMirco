@@ -1,5 +1,6 @@
 package com.example.basic.po;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.ibatis.type.Alias;
 
 import java.io.Serializable;
@@ -24,6 +25,7 @@ public class User implements Serializable {
     private Integer collectSum;
     private String profile;
     private String portraitFileName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date registerDate;
 
     public User(){}

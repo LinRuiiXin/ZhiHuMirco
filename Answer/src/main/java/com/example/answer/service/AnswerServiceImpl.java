@@ -68,12 +68,12 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public SimpleDto insertAnswer(MultipartFile file, Answer answer) {
         try {
-            String originalContent = answer.getContent();
-            answer.setContent(originalContent.length() > 50 ? originalContent.substring(0,50) : originalContent);
+            /*String originalContent = answer.getContent();
+            answer.setContent(originalContent.length() > 50 ? originalContent.substring(0,50) : originalContent);*/
             answerDao.insertAnswer(answer);
             informationDao.insertInformation(answer.getId(),answer.getUserId());
             userService.incrementVersion(answer.getUserId());
-            answer.setContent(originalContent);
+//            answer.setContent(originalContent);
             searchService.insertInformation(convertAnswerToInformation(answer));
             File newFile = new File("/Users/linruixin/Desktop/upload/ZhiHu/Answer/" + answer.getId() + ".txt");
             file.transferTo(newFile);

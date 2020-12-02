@@ -3,7 +3,9 @@ package com.example.user.service.interfaces;
 
 import com.example.basic.po.User;
 import com.example.basic.status.ChangePassword;
+import com.example.basic.vo.HomePageVo;
 import com.example.basic.vo.NewInformationVo;
+import com.example.basic.vo.RecommendViewBean;
 import com.example.basic.vo.UserAttention;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public interface UserService {
 
     boolean phoneHasRegistered(String phone);
 
-    void setPortraitFileNameById(Long id, String fileName);
+    User setPortraitFileNameById(Long id, String fileName);
 
     User getUserById(Long id);
 
@@ -34,4 +36,14 @@ public interface UserService {
     NewInformationVo getAttentionUserNewInformation(List<UserAttention> userAttentions);
 
     void incrementVersion(Long id);
+
+    HomePageVo getUserHomePageVo(Long targetUserId,Long userId);
+
+    List<RecommendViewBean> getUserInformation(Long userId,int from,int size);
+
+    User updateUser(User user);
+
+    void followUser(Long targetUserId,Long userId);
+
+    void unFollowUser(Long targetUserId,Long userId);
 }

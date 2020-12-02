@@ -2,13 +2,13 @@ package com.example.recommend.service;
 
 import com.example.basic.po.Information;
 import com.example.basic.po.User;
-import com.example.basic.util.StringUtils;
 import com.example.basic.vo.RecommendViewBean;
 import com.example.recommend.service.interfaces.RecommendService;
 import com.example.recommend.service.rpc.*;
 import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +54,19 @@ public class RecommendServiceImpl implements RecommendService {
     public List<RecommendViewBean> getInformationViewBean(List<Information> information) throws ExecutionException, InterruptedException {
         String answerIds = getInformationAnswerIds(information);
         String articleIds = getInformationArticleIds(information);
-        Future<List<RecommendViewBean>> answerFuture = executorService.submit(() -> answerService.getViewBeanBatch(answerIds));
-        Future<List<RecommendViewBean>> articleFuture = executorService.submit(() -> articleService.getViewBeanBatch(articleIds));
-        List<RecommendViewBean> answerViewBeans = answerFuture.get();
-        List<RecommendViewBean> articleViewBeans = articleFuture.get();
-        answerViewBeans.addAll(articleViewBeans);
+        Future<List<RecommendViewBean>> answerFuture = null;
+        if(!StringUtils.isEmpty(answerIds)){
+            answerFuture = executorService.submit(() -> answerService.getViewBeanBatch(answerIds));
+        }
+        Future<List<RecommendViewBean>> articleFuture = null;
+        if(!StringUtils.isEmpty(articleIds)){
+            articleFuture = executorService.submit(() -> articleService.getViewBeanBatch(articleIds));
+        }
+        List<RecommendViewBean> answerViewBeans = answerFuture != null ? answerFuture.get() : null;
+        List<RecommendViewBean> articleViewBeans = articleFuture != null ? articleFuture.get() : null;
+        if(articleViewBeans != null){
+            answerViewBeans.addAll(articleViewBeans);
+        }
         return answerViewBeans;
     }
 
