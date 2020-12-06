@@ -31,4 +31,10 @@
     <update id="decrementSubscribeSum">
         update question set subscribeSum = subscribeSum - 1 where id = #{questionId}
     </update>
+    <update id="incrementBrowseSum">
+        update question set browseSum = browseSum + 1 where id = #{questionId}
+    </update>
+    <select id="getHotList" resultType="question">
+        select * from question order by browseSum desc limit #{from},#{size}
+    </select>
 </mapper>

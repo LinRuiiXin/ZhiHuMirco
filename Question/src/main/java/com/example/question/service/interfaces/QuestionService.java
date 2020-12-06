@@ -19,4 +19,5 @@ public interface QuestionService {
     QuestionInfoVo getQuestionInfo(Long questionId, Long userId);
     void incrementSubscribeSum(Long questionId);
     void decrementSubscribeSum(Long questionId);
+    List<Question> getHotList(int from,int size);
 }

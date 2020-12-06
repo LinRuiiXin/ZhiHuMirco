@@ -86,4 +86,12 @@ public class QuestionController {
         questionAttentionService.removeAttention(userId,questionId);
         return SimpleDto.SUCCESS();
     }
+
+    /*
+    * 获取 "热榜" 内容
+    * */
+    @GetMapping("/Hot/{from}/{size}")
+    public SimpleDto getHotList(@PathVariable int from,@PathVariable int size){
+        return new SimpleDto(true,null,questionService.getHotList(from,size));
+    }
 }

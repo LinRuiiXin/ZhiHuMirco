@@ -3,11 +3,11 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.comment.dao.ArticleCommentDao">
-    <insert id="addLevelOne">
+    <insert id="addLevelOne" useGeneratedKeys="true" keyProperty="id">
         insert into article_comment_level_one(articleId,userId,content,supportSum,hasReply,time)
         values (#{articleId},#{userId},#{content},0,0,now())
     </insert>
-    <insert id="addLevelTwo">
+    <insert id="addLevelTwo" useGeneratedKeys="true" keyProperty="id">
         insert into article_comment_level_two(levelOneId,replyToUserId,replyUserId,content,supportSum,time)
         values (#{levelOneId},#{replyToUserId},#{replyUserId},#{content},0,now())
     </insert>

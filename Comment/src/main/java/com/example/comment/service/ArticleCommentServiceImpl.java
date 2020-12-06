@@ -11,7 +11,6 @@ import com.example.comment.dao.ArticleCommentSupportDao;
 import com.example.comment.service.interfaces.ArticleCommentService;
 import com.example.comment.service.rpc.ArticleService;
 import com.example.comment.service.rpc.UserService;
-import com.sun.mail.imap.protocol.ID;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,16 +50,16 @@ public class ArticleCommentServiceImpl implements ArticleCommentService {
 
     @Transactional
     @Override
-    public void addLevelOne(Long articleId, Long userId, String content) {
-        articleCommentDao.addLevelOne(articleId,userId,content);
-        articleService.incrementCommentSum(articleId);
+    public void addLevelOne(ArticleCommentLevelOne levelOne) {
+        articleCommentDao.addLevelOne(levelOne);
+        articleService.incrementCommentSum(levelOne.getArticleId());
     }
 
     @Transactional
     @Override
-    public void addLevelTwo(Long levelOneId, Long replyToUserId, Long replyUserId,String content) {
-        articleCommentDao.addLevelTwo(levelOneId,replyToUserId,replyUserId,content);
-        articleCommentDao.incrementLevelOneReplySum(levelOneId);
+    public void addLevelTwo(ArticleCommentLevelTwo levelTwo) {
+        articleCommentDao.addLevelTwo(levelTwo);
+        articleCommentDao.incrementLevelOneReplySum(levelTwo.getLevelOneId());
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.example.comment.controller;
 
 import com.example.basic.dto.SimpleDto;
+import com.example.basic.po.ArticleCommentLevelOne;
+import com.example.basic.po.ArticleCommentLevelTwo;
 import com.example.basic.vo.ArticleCommentLevelOneVo;
 import com.example.basic.vo.ArticleCommentLevelTwoVo;
 import com.example.comment.service.interfaces.ArticleCommentService;
@@ -29,14 +31,16 @@ public class ArticleCommentController {
 
     @PostMapping("/LevelOne")
     public SimpleDto addLevelOne(@RequestParam Long articleId,@RequestParam Long userId,@RequestParam String content){
-        articleCommentService.addLevelOne(articleId,userId,content);
-        return new SimpleDto(true,null,null);
+        ArticleCommentLevelOne levelOne = new ArticleCommentLevelOne(articleId, userId, content);
+        articleCommentService.addLevelOne(levelOne);
+        return new SimpleDto(true,null,levelOne.getId());
     }
 
     @PostMapping("/LevelTwo")
     public SimpleDto addLevelTwo(@RequestParam Long levelOneId,@RequestParam Long replyToUserId,@RequestParam Long replyUserId,@RequestParam String content){
-        articleCommentService.addLevelTwo(levelOneId,replyToUserId,replyUserId,content);
-        return SimpleDto.SUCCESS();
+        ArticleCommentLevelTwo levelTwo = new ArticleCommentLevelTwo(levelOneId, replyToUserId, replyUserId, content);
+        articleCommentService.addLevelTwo(levelTwo);
+        return new SimpleDto(true,null,levelTwo.getId());
     }
 
     @GetMapping("/LevelOne/{articleId}/{userId}/{start}")

@@ -11,9 +11,9 @@ import java.util.List;
 public interface AnswerCommentDao {
     List<AnswerCommentLevelOne> getAnswerCommentLevelOne(Long answerId, int start);
     List<AnswerCommentLevelTwo> getAnswerCommentLevelTwo(@Param("levelOneId") Long levelOneId, @Param("start") int start);
-    void addAnswerCommentLevelOne(@Param("answerId") Long answerId,@Param("userId")Long userId,@Param("content")String content);
+    void addAnswerCommentLevelOne(AnswerCommentLevelOne levelOne);
     Long answerCommentLevelOneExist(Long commentLevelOneId);
-    void addAnswerCommentLevelTwo(@Param("commentLevelOneId")Long commentLevelOneId,@Param("userId")Long userId,@Param("replyUserId")Long replyId,@Param("content")String content);
+    void addAnswerCommentLevelTwo(AnswerCommentLevelTwo levelTwo);
     void deleteAnswerCommentLevelOne(Long commentLevelOneId);
     void deleteAnswerCommentLevelTwo(Long commentLevelTwoId);
     void updateAnswerCommentLv1ReplySum(Long commentLevelOneId);

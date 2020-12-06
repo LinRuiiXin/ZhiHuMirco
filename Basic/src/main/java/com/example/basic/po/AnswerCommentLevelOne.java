@@ -14,6 +14,15 @@ public class AnswerCommentLevelOne {
     private Long supportSum;
     private int hasReply;
 
+    public AnswerCommentLevelOne() {
+    }
+
+    public AnswerCommentLevelOne(Long answerId, Long userId, String content) {
+        this.answerId = answerId;
+        this.userId = userId;
+        this.content = content;
+    }
+
     public Long getId() {
         return id;
     }

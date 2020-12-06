@@ -15,7 +15,7 @@
         order by id asc
         limit #{start},10
     </select>
-    <insert id="addAnswerCommentLevelOne">
+    <insert id="addAnswerCommentLevelOne" useGeneratedKeys="true" keyProperty="id">
         insert into answer_comment_level_one
         (answerId,userId,content,time) values
         (#{answerId},#{userId},#{content},now())
@@ -24,9 +24,9 @@
         select id from answer_comment_level_one where id = #{commentLevelOneId}
     </select>
 
-    <insert id="addAnswerCommentLevelTwo">
+    <insert id="addAnswerCommentLevelTwo" useGeneratedKeys="true" keyProperty="id">
         insert into answer_comment_level_two(levelOneId,replyToUserId,replyUserId,content,time)
-        values (#{commentLevelOneId},#{replyUserId},#{userId},#{content},now())
+        values (#{levelOneId},#{replyToUserId},#{replyUserId},#{content},now())
     </insert>
 
     <update id="updateAnswerCommentLv1ReplySum">

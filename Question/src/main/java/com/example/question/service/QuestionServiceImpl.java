@@ -106,6 +106,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public void recordUserBrowse(Long questionId,Long userId) {
+        questionDao.incrementBrowseSum(questionId);
         List<Long> questionType = classifyQuestionService.getQuestionType(questionId);
         asyncService.recordUserBrowse(questionType,userId);
     }
@@ -157,6 +158,11 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void decrementSubscribeSum(Long questionId) {
         questionDao.decrementSubscribeSum(questionId);
+    }
+
+    @Override
+    public List<Question> getHotList(int from, int size) {
+        return questionDao.getHotList(from,size);
     }
 
     private String getQuestionDescribe(Long questionId) {

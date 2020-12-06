@@ -10,9 +10,19 @@ public class AnswerCommentLevelTwo {
     private Long levelOneId;
     private Long replyToUserId;
     private Long replyUserId;
-    private String Content;
+    private String content;
     private Date date;
     private Long supportSum;
+
+    public AnswerCommentLevelTwo() {
+    }
+
+    public AnswerCommentLevelTwo(Long levelOneId, Long replyToUserId, Long replyUserId, String content) {
+        this.levelOneId = levelOneId;
+        this.replyToUserId = replyToUserId;
+        this.replyUserId = replyUserId;
+        this.content = content;
+    }
 
     public Long getId() {
         return id;
@@ -47,11 +57,11 @@ public class AnswerCommentLevelTwo {
     }
 
     public String getContent() {
-        return Content;
+        return content;
     }
 
     public void setContent(String content) {
-        Content = content;
+        this.content = content;
     }
 
     public Date getDate() {
@@ -77,7 +87,7 @@ public class AnswerCommentLevelTwo {
                 ", levelOneId=" + levelOneId +
                 ", replyToUserId=" + replyToUserId +
                 ", replyUserId=" + replyUserId +
-                ", Content='" + Content + '\'' +
+                ", Content='" + content + '\'' +
                 ", date=" + date +
                 ", supportSum=" + supportSum +
                 '}';

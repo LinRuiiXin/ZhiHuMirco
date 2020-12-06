@@ -1,5 +1,7 @@
 package com.example.comment.service.interfaces;
 
+import com.example.basic.po.AnswerCommentLevelOne;
+import com.example.basic.po.AnswerCommentLevelTwo;
 import com.example.basic.vo.AnswerCommentLevelOneVo;
 import com.example.basic.vo.AnswerCommentLevelTwoVo;
 
@@ -17,9 +19,9 @@ public interface AnswerCommentService {
 
     List<AnswerCommentLevelTwoVo> getAnswerCommentLevelTwo(Long commentLevelOneId, Long userId, int limit);
 
-    void addAnswerCommentLevelOne(Long answerId, Long userId, String content);
+    void addAnswerCommentLevelOne(AnswerCommentLevelOne levelOne);
 
-    int addAnswerCommentLevelTwo(Long commentLevelOneId, Long userId, Long replyUserId, String content);
+    int addAnswerCommentLevelTwo(AnswerCommentLevelTwo levelTwo);
 
     void deleteAnswerCommentLevelOne(Long commentLevelOneId);
 

@@ -24,6 +24,12 @@ public class ArticleCommentLevelOne {
     public ArticleCommentLevelOne() {
     }
 
+    public ArticleCommentLevelOne(Long articleId, Long userId, String content) {
+        this.articleId = articleId;
+        this.userId = userId;
+        this.content = content;
+    }
+
     public Long getId() {
         return id;
     }

@@ -99,14 +99,12 @@ public class AnswerCommentServiceImpl implements AnswerCommentService {
 
     /*
      * 添加一级评论
-     * @answerId:回答Id
-     * @userId:用户Id
-     * @content:评论内容
+     * @levelOne 以及评论，插入数据后回填主键
      * */
     @Override
-    public void addAnswerCommentLevelOne(Long answerId, Long userId, String content) {
-        commentDao.addAnswerCommentLevelOne(answerId, userId, content);
-        answerService.updateAnswerCommentSum(answerId);
+    public void addAnswerCommentLevelOne(AnswerCommentLevelOne levelOne) {
+        commentDao.addAnswerCommentLevelOne(levelOne);
+        answerService.updateAnswerCommentSum(levelOne.getAnswerId());
     }
 
     /*
@@ -118,18 +116,19 @@ public class AnswerCommentServiceImpl implements AnswerCommentService {
      * @return : 1-成功 2-一级评论已删除
      * */
     @Override
-    public int addAnswerCommentLevelTwo(Long commentLevelOneId, Long userId, Long replyUserId, String content) {
-        while (!tryLockCommentLevelOne(commentLevelOneId)) ;
+    public int addAnswerCommentLevelTwo(AnswerCommentLevelTwo levelTwo) {
+        Long levelOneId = levelTwo.getLevelOneId();
+        while (!tryLockCommentLevelOne(levelOneId)) ;
         try {
-            if (isCommentLevelOneExist(commentLevelOneId)) {
-                commentDao.addAnswerCommentLevelTwo(commentLevelOneId, userId, replyUserId, content);
-                commentDao.updateAnswerCommentLv1ReplySum(commentLevelOneId);
+            if (isCommentLevelOneExist(levelOneId)) {
+                commentDao.addAnswerCommentLevelTwo(levelTwo);
+                commentDao.updateAnswerCommentLv1ReplySum(levelTwo.getLevelOneId());
                 return 1;
             } else {
                 return 2;
             }
         } finally {
-            unLockCommentLevelOne(commentLevelOneId);
+            unLockCommentLevelOne(levelOneId);
         }
     }
 

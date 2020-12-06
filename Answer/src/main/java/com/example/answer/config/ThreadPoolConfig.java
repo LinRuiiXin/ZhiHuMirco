@@ -18,6 +18,6 @@ import java.util.concurrent.Executors;
 public class ThreadPoolConfig {
     @Bean
     public ExecutorService executorService(){
-        return Executors.newFixedThreadPool(100);
+        return Executors.newFixedThreadPool(5);
     }
 }

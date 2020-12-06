@@ -1,6 +1,8 @@
 package com.example.comment.controller;
 
 import com.example.basic.dto.SimpleDto;
+import com.example.basic.po.AnswerCommentLevelOne;
+import com.example.basic.po.AnswerCommentLevelTwo;
 import com.example.basic.vo.AnswerCommentLevelOneVo;
 import com.example.basic.vo.AnswerCommentLevelTwoVo;
 import com.example.comment.service.interfaces.AnswerCommentService;
@@ -60,8 +62,9 @@ public class AnswerCommentController {
     * */
     @PostMapping("/LevelOne")
     public SimpleDto addCommentLevelOne(@RequestParam Long answerId,@RequestParam Long userId,@RequestParam String content){
-        commentService.addAnswerCommentLevelOne(answerId,userId,content);
-        return new SimpleDto(true,null,null);
+        AnswerCommentLevelOne answerCommentLevelOne = new AnswerCommentLevelOne(answerId, userId, content);
+        commentService.addAnswerCommentLevelOne(answerCommentLevelOne);
+        return new SimpleDto(true,null,answerCommentLevelOne.getId());
     }
 
     /*
@@ -73,11 +76,12 @@ public class AnswerCommentController {
      * */
     @PostMapping("/LevelTwo")
     public SimpleDto addCommentLevelTwo(@RequestParam Long commentLevelOneId,@RequestParam Long userId,@RequestParam Long replyUserId,@RequestParam String content){
-        int i = commentService.addAnswerCommentLevelTwo(commentLevelOneId, userId, replyUserId, content);
+        AnswerCommentLevelTwo levelTwo = new AnswerCommentLevelTwo(commentLevelOneId, userId, replyUserId, content);
+        int i = commentService.addAnswerCommentLevelTwo(levelTwo);
         SimpleDto simpleDto = null;
         switch (i){
             case 1:
-                simpleDto = new SimpleDto(true,"回复成功",null);
+                simpleDto = new SimpleDto(true,"回复成功",levelTwo.getId());
                 break;
             case 2:
                 simpleDto = new SimpleDto(false,"抱歉，此评论已删除",null);
@@ -147,8 +151,8 @@ public class AnswerCommentController {
     * @commentId 二级评论Id
     * */
     @DeleteMapping("/LevelTwo")
-    public SimpleDto deleteAnswerCommentLevelTwo(@RequestParam Long commentId){
-        commentService.deleteAnswerCommentLevelTwo(commentId);
+    public SimpleDto deleteAnswerCommentLevelTwo(@RequestParam Long replyId){
+        commentService.deleteAnswerCommentLevelTwo(replyId);
         return new SimpleDto(true,null,null);
     }
 }
